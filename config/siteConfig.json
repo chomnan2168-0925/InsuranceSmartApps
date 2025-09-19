@@ -1,0 +1,53 @@
+{
+  "siteName": "Hybrid Advisor",
+  "navLinks": [
+    {
+      "title": "Home",
+      "href": "/",
+      "icon": "/assets/icons/home.svg"
+    },
+    {
+      "title": "Calculators",
+      "href": "/calculators",
+      "icon": "/assets/icons/calculator.svg"
+    },
+    {
+      "title": "Financial Tips",
+      "href": "/tips",
+      "icon": "/assets/icons/tips.svg"
+    },
+    {
+      "title": "Market News",
+      "href": "/newsroom",
+      "icon": "/assets/icons/news.svg"
+    },
+    {
+      "title": "Our Story",
+      "href": "/our-story",
+      "icon": "/assets/icons/story.svg"
+    },
+    {
+      "title": "Ask an Expert",
+      "href": "/ask-an-expert",
+      "icon": "/assets/icons/expert.svg"
+    }
+  ],
+  "footerLinks": [
+    { "title": "Our Story", "href": "/our-story" },
+    { "title": "Advertise", "href": "/advertise" },
+    { "title": "Privacy Policy", "href": "/privacy-policy" },
+    { "title": "Terms of Use", "href": "/terms-of-use" }
+  ],
+  "socialLinks": [
+    { "name": "Facebook", "url": "https://facebook.com", "icon": "/assets/icons/facebook.svg" },
+    { "name": "LinkedIn", "url": "https://linkedin.com", "icon": "/assets/icons/linkedin.svg" }
+  ],
+  "askAnExpertSubjects": [
+    "Retirement Planning",
+    "Investment Strategies",
+    "Insurance Needs",
+    "Debt Management",
+    "Tax Planning",
+    "General Inquiry"
+  ]
+}
