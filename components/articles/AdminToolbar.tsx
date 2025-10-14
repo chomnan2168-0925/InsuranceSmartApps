@@ -1,20 +1,29 @@
-import React from 'react';
-import Link from 'next/link'; // Import the Link component
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { supabase } from '@/lib/supabaseClient';
 
 interface AdminToolbarProps {
   slug: string;
 }
 
-// In a real app, you would have a hook like `useAuth()` to check admin status.
-// const { isAdmin } = useAuth();
 const AdminToolbar: React.FC<AdminToolbarProps> = ({ slug }) => {
-  const isAdmin = true; // For now, we are still mocking the admin status
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  if (!isAdmin) {
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAdmin(!!session);
+      setLoading(false);
+    };
+
+    checkAdminStatus();
+  }, []);
+
+  if (loading || !isAdmin) {
     return null;
   }
 
-  // The destination URL for the edit page
   const editUrl = `/admin0925/content/${slug}`;
 
   return (
@@ -27,7 +36,7 @@ const AdminToolbar: React.FC<AdminToolbarProps> = ({ slug }) => {
         
         <Link
           href={editUrl}
-          target="_blank" // This opens the link in a new tab
+          target="_blank"
           rel="noopener noreferrer"
           className="bg-navy-blue text-white font-bold py-2 px-4 rounded hover:bg-opacity-90 transition-colors flex-shrink-0"
         >
