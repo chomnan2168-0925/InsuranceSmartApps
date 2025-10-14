@@ -1,91 +1,142 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GetStaticProps } from 'next';
-import SectionHeader from '@/components/ui/SectionHeader';
-import MainCalculator from '@/components/home/MainCalculator';
-import SidebarWidget from '@/components/home/SidebarWidget';
-import ArticleCard from '@/components/home/ArticleCard';
 import { Article } from '@/types';
-import Link from 'next/link';
+import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/components/layout/SEO';
-import sampleArticles from '@/data/sampleArticles.json';
+import LayoutWithSidebar from '@/components/layout/LayoutWithSidebar';
+import Sidebar from '@/components/layout/Sidebar';
+import WelcomeSection from '@/components/home/WelcomeSection';
+import RecommendedSlider from '@/components/articles/RecommendedSlider';
+import CalculatorTabs, { CalculatorInfo } from '@/components/calculators/CalculatorTabs';
+import AutoCalculator from '@/components/calculators/AutoCalculator';
+import HomeCalculator from '@/components/calculators/HomeCalculator';
+import LifeCalculator from '@/components/calculators/LifeCalculator';
+import DisabilityCalculator from '@/components/calculators/DisabilityCalculator';
+import siteConfig from '@/config/siteConfig.json';
+
+const CarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
+const HomeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>;
+const LifeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>;
+const DisabilityIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21v-1a6 6 0 00-5.176-5.97M15 21H9" /></svg>;
 
 interface HomePageProps {
-  latestNews: Article[];
-  latestTips: Article[];
+  recommendedPosts: Article[];
+  sidebarTopTips: Article[];
+  sidebarTopNews: Article[];
 }
 
-const HomePage: React.FC<HomePageProps> = ({ latestNews, latestTips }) => {
-  const allArticles = [...latestNews, ...latestTips].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 3);
+const homeCalculatorTypes: CalculatorInfo[] = [
+  { id: 'auto', label: 'Auto', icon: <CarIcon />, activeColorClass: 'text-blue-600 border-blue-500', hoverColorClass: 'hover:border-blue-500' },
+  { id: 'home', label: 'Home', icon: <HomeIcon />, activeColorClass: 'text-green-600 border-green-500', hoverColorClass: 'hover:border-green-500' },
+  { id: 'life', label: 'Life', icon: <LifeIcon />, activeColorClass: 'text-purple-600 border-purple-500', hoverColorClass: 'hover:border-purple-500' },
+  { id: 'disability', label: 'Disability', icon: <DisabilityIcon />, activeColorClass: 'text-orange-600 border-orange-500', hoverColorClass: 'hover:border-orange-500' },
+];
+
+type CalculatorType = 'auto' | 'home' | 'life' | 'disability';
+
+const HomePage: React.FC<HomePageProps> = ({ recommendedPosts, sidebarTopTips, sidebarTopNews }) => {
+  const [activeCalculator, setActiveCalculator] = useState<CalculatorType>('auto');
+
+  const renderCalculator = () => {
+    switch (activeCalculator) {
+      case 'auto': return <AutoCalculator />;
+      case 'home': return <HomeCalculator />;
+      case 'life': return <LifeCalculator />;
+      case 'disability': return <DisabilityCalculator />;
+      default: return <AutoCalculator />;
+    }
+  };
   
+ // NEW, DYNAMIC VERSION
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: siteConfig.siteName,
+  url: siteConfig.siteUrl,
+  logo: `${siteConfig.siteUrl}/logo.png`,
+  sameAs: siteConfig.socialLinks.map(link => link.url),
+};
+
   return (
     <>
-      <SEO />
-      <div className="space-y-16">
-        <section className="text-center bg-white p-8 rounded-lg shadow-md">
-          <h1 className="text-4xl md:text-5xl font-bold text-navy-blue mb-4">
-            Smarter Financial Planning, Simplified.
-          </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Combining expert human advice with powerful technology to help you achieve your financial goals. Get started with our free retirement calculator.
-          </p>
-        </section>
+      <SEO
+        title="Insurance SmartApps: Useful Insurance Tips, Free Tools & latest news"
+        description="We make insurance simple. Get free, actionable tips to save money, the latest insurance news, and advanced featured calculators to compare options, plan your budget, and see real value before you buy. Your unconditional free advisor."
+        // UPDATED: Pass the new schemaData prop
+        schemaData={organizationSchema}
+      />
+      
+      <LayoutWithSidebar
+        sidebar={<Sidebar topTips={sidebarTopTips} topNews={sidebarTopNews} />}
+      >
+        <div className="space-y-4">
+          <WelcomeSection />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <MainCalculator />
-          </div>
-          <aside>
-            <SidebarWidget title="Latest News">
-              <ul className="space-y-3">
-                {latestNews.slice(0, 3).map(article => (
-                  <li key={article.id} className="border-b pb-2 last:border-b-0">
-                    <Link href={`/${article.category.toLowerCase()}/${article.slug}`} className="hover:text-gold text-navy-blue transition-colors">
-                      {article.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </SidebarWidget>
-             <SidebarWidget title="Popular Tips">
-              <ul className="space-y-3">
-                {latestTips.slice(0, 3).map(article => (
-                  <li key={article.id} className="border-b pb-2 last:border-b-0">
-                    <Link href={`/${article.category.toLowerCase()}/${article.slug}`} className="hover:text-gold text-navy-blue transition-colors">
-                      {article.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </SidebarWidget>
-          </aside>
+          <section className="bg-white p-4 md:p-6 rounded-lg shadow-lg space-y-4">
+           <div>
+                <h2 className="text-xl md:text-2xl font-bold text-navy-blue text-center">
+                  Unlock Smarter Savings with Our Advanced Insurance Tools!
+                </h2>
+                
+                <p className="mt-2 text-base text-gray-600 text-center max-w-4xl mx-auto">
+                  Don't just get a quote - get an education. Our suite of free, unbiased insurance calculator apps and expert tips are designed to help you easily compare plans, understand your options, find the savings you deserve, and choose with confidence.
+                </p>
+            </div>
+            
+            <div className="flex items-center border-b border-gray-200">
+                <CalculatorTabs
+                  types={homeCalculatorTypes}
+                  selectedType={activeCalculator}
+                  onTypeSelect={setActiveCalculator as (id: any) => void}
+                  variant="secondary" 
+                />
+                <a 
+                  href="/calculators"
+                  className="
+                    ml-auto whitespace-nowrap py-2 px-4 rounded-md text-sm font-semibold
+                    border-2 border-blue-500 text-blue-600 
+                    transform transition-all duration-300
+                    hover:bg-blue-600 hover:text-white hover:shadow-lg hover:-translate-y-0.5
+                  "
+                >
+                  Explore All Smart Apps
+                </a>
+            </div>
+            
+            <div>
+              {renderCalculator()}
+            </div>
+          </section>
+
+          <RecommendedSlider articles={recommendedPosts} />
         </div>
-
-        <section>
-          <SectionHeader
-            title="Latest Articles & Tips"
-            subtitle="Stay informed with our latest insights on financial planning, investing, and market news."
-          />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {allArticles.map((article) => (
-              <ArticleCard key={article.id} article={article} />
-            ))}
-          </div>
-        </section>
-      </div>
+      </LayoutWithSidebar>
     </>
   );
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  // In sample data mode, we read from the local JSON file.
-  const news = sampleArticles.articles.filter(a => a.category === 'News' && a.status === 'Published').slice(0, 6);
-  const tips = sampleArticles.articles.filter(a => a.category === 'Tips' && a.status === 'Published').slice(0, 6);
-  
+  const [
+    recommendedResponse,
+    sidebarTipsResponse,
+    sidebarNewsResponse
+  ] = await Promise.all([
+    // Query 1: Get ALL articles with the "Don't Miss!" label
+    supabase.from('articles').select('*').eq('label', "Don't Miss!").eq('status', 'Published').order('created_at', { ascending: false }),
+    // Query 2: Get the 3 most recent "Insurance Tips"
+    supabase.from('articles').select('*').eq('category', 'Insurance Tips').eq('status', 'Published').order('created_at', { ascending: false }).limit(3),
+    // Query 3: Get the 3 most recent "Insurance Newsroom" articles
+    supabase.from('articles').select('*').eq('category', 'Insurance Newsroom').eq('status', 'Published').order('created_at', { ascending: false }).limit(3)
+  ]);
+
   return {
     props: {
-      latestNews: news,
-      latestTips: tips,
+      recommendedPosts: recommendedResponse.data || [],
+      sidebarTopTips: sidebarTipsResponse.data || [],
+      sidebarTopNews: sidebarNewsResponse.data || [],
     },
+    // Refresh the homepage data every 10 minutes
+    revalidate: 600, 
   };
 };
 

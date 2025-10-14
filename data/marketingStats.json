@@ -1,1 +1,34 @@
-full contents of data/marketingStats.json
+{
+  "publicStats": [
+    { 
+      "label": "Monthly Uniques", 
+      "value": "1.2M+", 
+      "percentage": 95, 
+      "color": "bg-navy-blue" 
+    },
+    { 
+      "label": "Monthly Pageviews", 
+      "value": "4.9M+", 
+      "percentage": 98, 
+      "color": "bg-blue-800" 
+    },
+    { 
+      "label": "US-Based Audience", 
+      "value": "60%", 
+      "percentage": 60, 
+      "color": "bg-sky-700" 
+    },
+    { 
+      "label": "Female Audience", 
+      "value": "40%", 
+      "percentage": 40, 
+      "color": "bg-teal-600" 
+    },
+    { 
+      "label": "Avg. Household Income", 
+      "value": "$150k+", 
+      "percentage": 75, 
+      "color": "bg-gray-500" 
+    }
+  ]
+}

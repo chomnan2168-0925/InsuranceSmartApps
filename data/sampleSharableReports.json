@@ -1,0 +1,22 @@
+{
+  "q4-2024-summary-final": {
+    "id": "q4-2024-summary-final",
+    "title": "Q4 2024 Performance Summary (Partner Report)",
+    "period": "October 1, 2024 - December 31, 2024",
+    "aiSummary": "<p>During Q4 2024, our platform demonstrated exceptional growth, attracting over <strong>1.1 million total visitors</strong>. This represents a significant increase in user engagement and market penetration. Key drivers of this success were our targeted content strategies in the retirement planning sector.</p>",
+    "data": {
+      "totalVisitors": 1100000,
+      "pageviews": 4500000,
+      "avgSessionDuration": "3m 45s",
+      "bounceRate": "42.5%",
+      "topSources": [
+        { "source": "Organic Search", "visitors": 700000, "percentage": "63.6" },
+        { "source": "Direct", "visitors": 250000, "percentage": "22.7" }
+      ],
+      "topPages": [
+        { "path": "/insurance-tips/understanding-401k-options", "views": 350000 },
+        { "path": "/", "views": 300000 }
+      ]
+    }
+  }
+}

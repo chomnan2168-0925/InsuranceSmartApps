@@ -1,0 +1,26 @@
+{
+  "recommended": [
+    {
+      "id": "rec-1",
+      "articleSlug": "new-retirement-legislation-impact",
+      "assignedDate": "2025-09-26",
+      "locations": ["Home Page", "Article View Pages"]
+    }
+  ],
+  "mostRead": [
+    {
+      "id": "mr-1",
+      "articleSlug": "fintech-innovations-2024",
+      "assignedDate": "2025-09-25",
+      "locations": ["Insurance Tips Category Page"]
+    }
+  ],
+  "sponsored": [
+    {
+      "id": "sp-1",
+      "articleSlug": "partnership-with-global-bank",
+      "assignedDate": "2025-09-24",
+      "locations": ["Insurance Newsroom Category Page", "Insurance Tips Category Page"]
+    }
+  ]
+}

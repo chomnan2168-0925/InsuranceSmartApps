@@ -1,82 +1,142 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import React from 'react';
 import ArticlePageTemplate from '@/components/templates/ArticlePageTemplate';
-// FIX: Replaced Post with Article for consistency with type definitions.
 import { Article } from '@/types';
+import { supabase } from '@/lib/supabaseClient';
 
-// FIX: Updated mock data to conform to the Article type by adding 'id' and 'status'.
-// Mock data store for all newsroom articles
-const allNewsroomPosts: Article[] = [
-  {
-    id: 10,
-    slug: 'hybrid-advisor-secures-series-b-funding',
-    title: 'Hybrid Advisor Secures $50M in Series B Funding',
-    date: '2024-11-01',
-    excerpt: 'The new funding will accelerate product development and expand our team of financial experts.',
-    imageUrl: '/images/funding.jpg',
-    content: `
-      <p>We are thrilled to announce that Hybrid Advisor has successfully closed a $50 million Series B funding round. This investment will be instrumental in accelerating our product development pipeline, enhancing our AI-driven advisory tools, and expanding our world-class team of financial experts.</p>
-      <p>The round was led by FutureGrowth Ventures, with participation from existing investors. This new capital underscores the confidence our partners have in our mission to democratize financial planning.</p>
-    `,
-    category: 'Newsroom',
-    status: 'Published',
-    tags: ['Funding', 'Growth', 'Investment'],
-    author: { name: 'John Doe', avatarUrl: '/images/authors/john-doe.jpg' }
-  },
-  {
-    id: 11,
-    slug: 'new-cfo-joins-leadership-team',
-    title: 'Jane Doe Joins Hybrid Advisor as Chief Financial Officer',
-    date: '2024-10-20',
-    excerpt: 'With over 20 years of experience in FinTech, Jane will guide the company\'s next phase of growth.',
-    imageUrl: '/images/new-cfo.jpg',
-    content: `<p>Hybrid Advisor is proud to welcome Jane Doe to our executive team as the new Chief Financial Officer. Jane brings over two decades of financial leadership experience in the FinTech sector, having previously served at several high-growth startups and public companies.</p>`,
-    category: 'Newsroom',
-    status: 'Published',
-    tags: ['Team', 'Leadership'],
-    author: { name: 'John Doe', avatarUrl: '/images/authors/john-doe.jpg' }
-  },
-  {
-    id: 12,
-    slug: 'partnership-with-global-bank',
-    title: 'Hybrid Advisor Announces Strategic Partnership with Global Bank',
-    date: '2024-09-01',
-    excerpt: 'This partnership will bring our hybrid financial planning services to a wider audience.',
-    imageUrl: '/images/partnership.jpg',
-    content: `<p>We are excited to announce a strategic partnership with a leading global bank. This collaboration will integrate Hybrid Advisor's platform into the bank's digital offerings, providing millions of customers with access to our unique blend of human and automated financial advice.</p>`,
-    category: 'Newsroom',
-    status: 'Published',
-    tags: ['Partnership', 'Business'],
-    author: { name: 'John Doe', avatarUrl: '/images/authors/john-doe.jpg' }
-  },
-];
+// 🆕 ADD inpostAd to the interface
+interface NewsroomArticlePageProps {
+  post: Article;
+  recommendedPosts: Article[];
+  sidebarTopTips: Article[];
+  sidebarTopNews: Article[];
+  inpostAd?: { code: string; enabled: boolean } | null; // 🆕 NEW
+}
 
-
-const NewsroomArticlePage = ({ post, recommendedPosts }) => {
-  if (!post) return <div>Post not found.</div>;
-  return <ArticlePageTemplate post={post} recommendedPosts={recommendedPosts} />;
+const NewsroomArticlePage: React.FC<NewsroomArticlePageProps> = (props) => {
+  return <ArticlePageTemplate {...props} />;
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  // In a real app, you'd fetch slugs from a CMS
-  const paths = allNewsroomPosts.map((post) => ({
+  // Fetch all published Newsroom article slugs
+  const { data: articles, error } = await supabase
+    .from('articles')
+    .select('slug')
+    .eq('category', 'Insurance Newsroom')
+    .eq('status', 'Published');
+
+  if (error || !articles) {
+    console.error('Error fetching article paths:', error);
+    return { paths: [], fallback: 'blocking' };
+  }
+
+  const paths = articles.map((post) => ({
     params: { slug: post.slug },
   }));
 
-  return { paths, fallback: false };
+  return { 
+    paths, 
+    fallback: 'blocking'
+  };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  // In a real app, you'd fetch a single post by slug
-  const post = allNewsroomPosts.find((p) => p.slug === params.slug);
-  // Get other posts for the "recommended" section, excluding the current one
-  const recommendedPosts = allNewsroomPosts.filter((p) => p.slug !== params.slug).slice(0, 3);
+  const slug = params?.slug as string;
+
+  // Fetch the main article with author information
+  const { data: post, error } = await supabase
+    .from('articles')
+    .select(`
+      *,
+      profiles:author_id (
+        id,
+        name
+      )
+    `)
+    .eq('slug', slug)
+    .eq('category', 'Insurance Newsroom')
+    .eq('status', 'Published')
+    .single();
+  
+  if (error || !post) {
+    console.error('Error fetching article:', error);
+    return { notFound: true };
+  }
+
+  // Transform author data
+  if (post.profiles) {
+    post.author = {
+      name: post.profiles.name,
+      avatarUrl: '/images/default-avatar.png',
+    };
+    delete post.profiles;
+  }
+
+  // Ensure date field for backwards compatibility
+  post.date = post.published_date || post.created_at;
+
+  // Fetch recommended posts (same category, exclude current)
+  const { data: recommendedData } = await supabase
+    .from('articles')
+    .select(`
+      id,
+      slug,
+      title,
+      excerpt,
+      imageUrl,
+      category,
+      created_at,
+      published_date,
+      tags
+    `)
+    .eq('status', 'Published')
+    .eq('category', 'Insurance Newsroom')
+    .neq('id', post.id)
+    .order('created_at', { ascending: false })
+    .limit(3);
+
+  // Fetch sidebar tips - 🐛 FIXED: Removed duplicate .eq()
+  const { data: sidebarTipsData } = await supabase
+    .from('articles')
+    .select('id, slug, title, excerpt, imageUrl, category, created_at, published_date')
+    .eq('status', 'Published')
+    .eq('category', 'Insurance Tips')
+    .order('created_at', { ascending: false })
+    .limit(3);
+
+  // Fetch sidebar news
+  const { data: sidebarNewsData } = await supabase
+    .from('articles')
+    .select('id, slug, title, excerpt, imageUrl, category, created_at, published_date')
+    .eq('status', 'Published')
+    .eq('category', 'Insurance Newsroom')
+    .neq('id', post.id)
+    .order('created_at', { ascending: false })
+    .limit(3);
+
+  // 🆕 ADD THIS: Fetch ad slots data
+  const { data: adData } = await supabase
+    .from('site_settings')
+    .select('value')
+    .eq('key', 'ad_slots')
+    .single();
+
+  const adSlots = adData?.value || {};
+  const inpostAd = adSlots.inpost || null;
+
+  // Transform dates for all fetched articles
+  const transformDates = (articles: any[]) => 
+    articles.map(a => ({ ...a, date: a.published_date || a.created_at }));
 
   return {
     props: {
       post,
-      recommendedPosts,
+      recommendedPosts: transformDates(recommendedData || []),
+      sidebarTopTips: transformDates(sidebarTipsData || []),
+      sidebarTopNews: transformDates(sidebarNewsData || []),
+      inpostAd, // 🆕 NEW
     },
+    revalidate: 600,
   };
 };
 

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useSampleData } from '@/config/featureFlags';
 import { supabase } from '@/lib/supabaseClient';
 
 const useAuth = () => {
@@ -9,27 +8,20 @@ const useAuth = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (useSampleData) {
-        // Mock authentication check
-        const sampleToken = localStorage.getItem('sample-auth-token');
-        setIsAuthenticated(!!sampleToken);
-      } else {
-        // Real Supabase authentication check
-        const { data: { session } } = await supabase.auth.getSession();
-        setIsAuthenticated(!!session);
-      }
+      // Real Supabase authentication check
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
       setLoading(false);
     };
 
     checkAuth();
 
-    // Listen for auth state changes if using real Supabase
-    if (!useSampleData) {
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setIsAuthenticated(!!session);
-        });
-        return () => subscription.unsubscribe();
-    }
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
+    
+    return () => subscription.unsubscribe();
   }, []);
 
   return { isAuthenticated, loading };

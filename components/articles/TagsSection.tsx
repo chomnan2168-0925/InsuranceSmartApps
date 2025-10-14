@@ -11,19 +11,25 @@ const TagsSection: React.FC<TagsSectionProps> = ({ tags }) => {
   }
 
   return (
-    <div className="mt-8">
-      <h3 className="text-lg font-semibold text-gray-800 mb-3">Tags:</h3>
-      <div className="flex flex-wrap gap-2">
-        {tags.map((tag) => (
-          <Link
-            // In a real app, this would link to a tag archive page
-            href={`/tags/${tag.toLowerCase().replace(/ /g, '-')}`}
-            key={tag}
-            className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-3 py-1 rounded-full text-sm font-medium transition-colors"
-          >
-            {tag}
-          </Link>
-        ))}
+    // --- UPDATED: Padding reduced from pt-6 to pt-4 for a smaller field ---
+    <div className="mt-1 pt-2 border-t border-gray-200">
+      <div className="flex items-center flex-wrap gap-x-1 gap-y-2">
+        
+        {/* --- UPDATED: Label font size reduced to text-sm to match --- */}
+        <span className="text-sm font-semibold text-gray-900">Tags:</span>
+        
+        <div className="flex flex-wrap gap-1">
+          {tags.map((tag) => (
+            <Link
+              key={tag}
+              href={`/tags/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+              className="bg-gray-100 text-gray-800 hover:bg-gray-200 px-3 py-1 text-sm font-medium rounded-full transition-colors"
+            >
+              {tag}
+            </Link>
+          ))}
+        </div>
+
       </div>
     </div>
   );

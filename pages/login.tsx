@@ -4,8 +4,8 @@ import Link from 'next/link';
 import SEO from '@/components/layout/SEO';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { supabase } from '@/lib/supabaseClient';
-import { useSampleData } from '@/config/featureFlags';
-import sampleUsers from '@/data/sampleUsers.json';
+// REMOVED: import { useSampleData } from '@/config/featureFlags';
+// REMOVED: import sampleUsers from '@/data/sampleUsers.json';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -19,34 +19,25 @@ const LoginPage = () => {
     setError('');
     setLoading(true);
 
-    if (useSampleData) {
-      // Mock login logic
-      const user = sampleUsers.users.find(u => u.email === email && u.password === password);
-      if (user) {
-        localStorage.setItem('sample-auth-token', JSON.stringify({ id: user.id, email: user.email, role: user.role }));
-        router.push('/admin0925');
-      } else {
-        setError('Invalid email or password in sample mode.');
-      }
-    } else {
-      // Real Supabase login
-      const { error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
+    // The if/else logic has been removed. We now only use the real Supabase login.
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
 
-      if (error) {
-        setError(error.message);
-      } else {
-        router.push('/admin0925');
-      }
+    if (error) {
+      setError(error.message);
+    } else {
+      router.push('/admin0925'); // On success, go to the admin dashboard
     }
+    
     setLoading(false);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <SEO title="Admin Login" />
+      {/* Added the noindex prop for good SEO practice */}
+      <SEO title="Admin Login" noindex={true} />
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <SectionHeader title="Admin Login" />
         <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
@@ -93,12 +84,6 @@ const LoginPage = () => {
                 {loading ? 'Signing in...' : 'Sign in'}
               </button>
             </div>
-            <p className="text-sm text-center text-gray-500">
-                Need an account?{' '}
-                <Link href="/register" className="font-medium text-navy-blue hover:text-gold">
-                    Register here
-                </Link>
-            </p>
           </form>
         </div>
       </div>

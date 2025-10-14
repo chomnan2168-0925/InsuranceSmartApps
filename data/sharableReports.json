@@ -1,0 +1,344 @@
+{
+  "6R6HTsVlAr": {
+    "id": "annual-2024-summary",
+    "title": "2024 Annual Performance Summary",
+    "data": {
+      "totalVisitors": 1597000,
+      "pageviews": 4860000,
+      "avgSessionDuration": 238,
+      "bounceRate": "40.4%",
+      "topSources": [
+        {
+          "source": "Organic Search",
+          "visitors": 900000,
+          "percentage": 45
+        },
+        {
+          "source": "Direct",
+          "visitors": 550000,
+          "percentage": 28
+        },
+        {
+          "source": "Social Media",
+          "visitors": 300000,
+          "percentage": 15
+        },
+        {
+          "source": "Referral",
+          "visitors": 200000,
+          "percentage": 10
+        }
+      ],
+      "topPages": [
+        {
+          "path": "/",
+          "views": 400000
+        },
+        {
+          "path": "/insurance-tips",
+          "views": 350000
+        },
+        {
+          "path": "/calculators",
+          "views": 250000
+        }
+      ]
+    },
+    "topSources": [
+      {
+        "source": "Organic Search",
+        "visitors": 900000,
+        "percentage": 45
+      },
+      {
+        "source": "Direct",
+        "visitors": 550000,
+        "percentage": 28
+      },
+      {
+        "source": "Social Media",
+        "visitors": 300000,
+        "percentage": 15
+      },
+      {
+        "source": "Referral",
+        "visitors": 200000,
+        "percentage": 10
+      }
+    ],
+    "topPages": [
+      {
+        "path": "/",
+        "views": 400000
+      },
+      {
+        "path": "/insurance-tips",
+        "views": 350000
+      },
+      {
+        "path": "/calculators",
+        "views": 250000
+      }
+    ],
+    "rawData": [
+      {
+        "month": "2024-01",
+        "totalVisitors": 95000,
+        "pageviews": 300000,
+        "avgSessionDuration": 210,
+        "bounceRate": 44.5
+      },
+      {
+        "month": "2024-02",
+        "totalVisitors": 102000,
+        "pageviews": 320000,
+        "avgSessionDuration": 215,
+        "bounceRate": 43.2
+      },
+      {
+        "month": "2024-03",
+        "totalVisitors": 110000,
+        "pageviews": 340000,
+        "avgSessionDuration": 220,
+        "bounceRate": 42.8
+      },
+      {
+        "month": "2024-04",
+        "totalVisitors": 120000,
+        "pageviews": 360000,
+        "avgSessionDuration": 225,
+        "bounceRate": 41.5
+      },
+      {
+        "month": "2024-05",
+        "totalVisitors": 125000,
+        "pageviews": 380000,
+        "avgSessionDuration": 230,
+        "bounceRate": 40.9
+      },
+      {
+        "month": "2024-06",
+        "totalVisitors": 130000,
+        "pageviews": 400000,
+        "avgSessionDuration": 235,
+        "bounceRate": 40.2
+      },
+      {
+        "month": "2024-07",
+        "totalVisitors": 140000,
+        "pageviews": 420000,
+        "avgSessionDuration": 240,
+        "bounceRate": 39.8
+      },
+      {
+        "month": "2024-08",
+        "totalVisitors": 145000,
+        "pageviews": 430000,
+        "avgSessionDuration": 245,
+        "bounceRate": 39.5
+      },
+      {
+        "month": "2024-09",
+        "totalVisitors": 150000,
+        "pageviews": 450000,
+        "avgSessionDuration": 250,
+        "bounceRate": 38.9
+      },
+      {
+        "month": "2024-10",
+        "totalVisitors": 155000,
+        "pageviews": 470000,
+        "avgSessionDuration": 255,
+        "bounceRate": 38.2
+      },
+      {
+        "month": "2024-11",
+        "totalVisitors": 160000,
+        "pageviews": 490000,
+        "avgSessionDuration": 260,
+        "bounceRate": 37.8
+      },
+      {
+        "month": "2024-12",
+        "totalVisitors": 165000,
+        "pageviews": 500000,
+        "avgSessionDuration": 265,
+        "bounceRate": 37.5
+      }
+    ],
+    "aiSummary": "<p>During this period, our platform saw exceptional growth, attracting over <strong>1,597,000</strong> visitors.</p>",
+    "createdAt": "2025-10-02T07:31:15.820Z",
+    "expires": "2025-11-01"
+  },
+  "ojGyL7akD3": {
+    "id": "annual-2024-summary",
+    "title": "2024 Annual Performance Summary",
+    "data": {
+      "totalVisitors": 1597000,
+      "pageviews": 4860000,
+      "avgSessionDuration": 238,
+      "bounceRate": "40.4%",
+      "topSources": [
+        {
+          "source": "Organic Search",
+          "visitors": 900000,
+          "percentage": 45
+        },
+        {
+          "source": "Direct",
+          "visitors": 550000,
+          "percentage": 28
+        },
+        {
+          "source": "Social Media",
+          "visitors": 300000,
+          "percentage": 15
+        },
+        {
+          "source": "Referral",
+          "visitors": 200000,
+          "percentage": 10
+        }
+      ],
+      "topPages": [
+        {
+          "path": "/",
+          "views": 400000
+        },
+        {
+          "path": "/insurance-tips",
+          "views": 350000
+        },
+        {
+          "path": "/calculators",
+          "views": 250000
+        }
+      ]
+    },
+    "topSources": [
+      {
+        "source": "Organic Search",
+        "visitors": 900000,
+        "percentage": 45
+      },
+      {
+        "source": "Direct",
+        "visitors": 550000,
+        "percentage": 28
+      },
+      {
+        "source": "Social Media",
+        "visitors": 300000,
+        "percentage": 15
+      },
+      {
+        "source": "Referral",
+        "visitors": 200000,
+        "percentage": 10
+      }
+    ],
+    "topPages": [
+      {
+        "path": "/",
+        "views": 400000
+      },
+      {
+        "path": "/insurance-tips",
+        "views": 350000
+      },
+      {
+        "path": "/calculators",
+        "views": 250000
+      }
+    ],
+    "rawData": [
+      {
+        "month": "2024-01",
+        "totalVisitors": 95000,
+        "pageviews": 300000,
+        "avgSessionDuration": 210,
+        "bounceRate": 44.5
+      },
+      {
+        "month": "2024-02",
+        "totalVisitors": 102000,
+        "pageviews": 320000,
+        "avgSessionDuration": 215,
+        "bounceRate": 43.2
+      },
+      {
+        "month": "2024-03",
+        "totalVisitors": 110000,
+        "pageviews": 340000,
+        "avgSessionDuration": 220,
+        "bounceRate": 42.8
+      },
+      {
+        "month": "2024-04",
+        "totalVisitors": 120000,
+        "pageviews": 360000,
+        "avgSessionDuration": 225,
+        "bounceRate": 41.5
+      },
+      {
+        "month": "2024-05",
+        "totalVisitors": 125000,
+        "pageviews": 380000,
+        "avgSessionDuration": 230,
+        "bounceRate": 40.9
+      },
+      {
+        "month": "2024-06",
+        "totalVisitors": 130000,
+        "pageviews": 400000,
+        "avgSessionDuration": 235,
+        "bounceRate": 40.2
+      },
+      {
+        "month": "2024-07",
+        "totalVisitors": 140000,
+        "pageviews": 420000,
+        "avgSessionDuration": 240,
+        "bounceRate": 39.8
+      },
+      {
+        "month": "2024-08",
+        "totalVisitors": 145000,
+        "pageviews": 430000,
+        "avgSessionDuration": 245,
+        "bounceRate": 39.5
+      },
+      {
+        "month": "2024-09",
+        "totalVisitors": 150000,
+        "pageviews": 450000,
+        "avgSessionDuration": 250,
+        "bounceRate": 38.9
+      },
+      {
+        "month": "2024-10",
+        "totalVisitors": 155000,
+        "pageviews": 470000,
+        "avgSessionDuration": 255,
+        "bounceRate": 38.2
+      },
+      {
+        "month": "2024-11",
+        "totalVisitors": 160000,
+        "pageviews": 490000,
+        "avgSessionDuration": 260,
+        "bounceRate": 37.8
+      },
+      {
+        "month": "2024-12",
+        "totalVisitors": 165000,
+        "pageviews": 500000,
+        "avgSessionDuration": 265,
+        "bounceRate": 37.5
+      }
+    ],
+    "aiSummary": "<p>During this period, our platform saw exceptional growth, attracting over <strong>1,597,000</strong> visitors.</p>",
+    "createdAt": "2025-10-02T07:34:08.667Z",
+    "expires": "2025-11-01"
+  }
+}

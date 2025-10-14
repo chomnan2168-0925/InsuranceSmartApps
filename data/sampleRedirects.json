@@ -1,1 +1,8 @@
-full contents of data/sampleRedirects.json
+
+{
+  "redirects": [
+    { "id": 1, "from": "/old-page", "to": "/new-page", "type": 301 },
+    { "id": 2, "from": "/another-old-link", "to": "/tips/creating-a-budget-that-works", "type": 301 },
+    { "id": 3, "from": "/about", "to": "/our-story", "type": 302 }
+  ]
+}

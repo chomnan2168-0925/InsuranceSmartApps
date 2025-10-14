@@ -1,0 +1,10 @@
+# Block all crawlers from the admin areas
+User-agent: *
+Disallow: /admin0925/
+Disallow: /dev-admin0925/
+
+# Allow all crawlers to access the rest of the site
+Allow: /
+
+# Provide the location of the sitemap
+Sitemap: https://www.insurancesmartcalculator.com/sitemap.xml

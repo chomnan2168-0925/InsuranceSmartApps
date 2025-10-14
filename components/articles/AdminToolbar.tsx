@@ -1,37 +1,38 @@
 import React from 'react';
-import { useRouter } from 'next/router';
+import Link from 'next/link'; // Import the Link component
 
 interface AdminToolbarProps {
   slug: string;
 }
 
-// This is a mock component. In a real app, you would check for user authentication.
+// In a real app, you would have a hook like `useAuth()` to check admin status.
+// const { isAdmin } = useAuth();
 const AdminToolbar: React.FC<AdminToolbarProps> = ({ slug }) => {
-  const router = useRouter();
-  const isAdmin = true; // Mocking admin status
+  const isAdmin = true; // For now, we are still mocking the admin status
 
   if (!isAdmin) {
     return null;
   }
 
-  const handleEdit = () => {
-    // In a real CMS, this would link to the edit page for this slug
-    alert(`Navigating to edit page for: ${slug}`);
-  };
+  // The destination URL for the edit page
+  const editUrl = `/admin0925/content/${slug}`;
 
   return (
-    <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-md">
-      <div className="flex items-center justify-between">
+    <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 mb-6 rounded-r-md">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <p className="font-bold">Admin View</p>
-          <p>You are viewing this page as an administrator.</p>
+          <p className="font-bold">Admin Preview</p>
+          <p className="text-sm">You are viewing this live page as an administrator.</p>
         </div>
-        <button
-          onClick={handleEdit}
-          className="bg-navy-blue text-white font-bold py-2 px-4 rounded hover:bg-opacity-90 transition-colors"
+        
+        <Link
+          href={editUrl}
+          target="_blank" // This opens the link in a new tab
+          rel="noopener noreferrer"
+          className="bg-navy-blue text-white font-bold py-2 px-4 rounded hover:bg-opacity-90 transition-colors flex-shrink-0"
         >
           Edit Post
-        </button>
+        </Link>
       </div>
     </div>
   );

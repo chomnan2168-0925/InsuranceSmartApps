@@ -1,1 +1,130 @@
-full contents of data/calculatorConfig.json
+{
+  "auto": {
+    "baseRate": 100,
+    "ageMultiplier": {
+      "young": 1.5,
+      "adult": 1.0,
+      "senior": 1.1
+    },
+    "recordMultiplier": {
+      "clean": 1.0,
+      "tickets": 1.2,
+      "accident": 1.6
+    },
+    "coverageMultiplier": {
+      "minimum": 0.8,
+      "good": 1.0,
+      "best": 1.4
+    },
+    "deductibleMultiplier": {
+      "250": 1.2,
+      "500": 1.0,
+      "750": 0.9,
+      "1000": 0.8
+    },
+    "discounts": {
+      "bundle": 0.15,
+      "goodStudent": 0.10,
+      "antiTheft": 0.05,
+      "defensiveDriver": 0.05
+    }
+  },
+  "home": {
+    "baseRate": 0.0035,
+    "constructionMultiplier": {
+      "frame": 1.0,
+      "masonry": 0.85,
+      "superior": 0.75
+    },
+    "ageMultiplier": {
+      "new": 0.8,
+      "medium": 1.0,
+      "old": 1.3
+    },
+    "protectiveCredits": {
+      "burglarAlarm": 0.05,
+      "smokeDetectors": 0.05,
+      "sprinklerSystem": 0.15
+    },
+    "liabilityMultiplier": {
+      "100000": 1.0,
+      "300000": 1.1,
+      "500000": 1.2
+    },
+    "deductibleMultiplier": {
+      "500": 1.15,
+      "1000": 1.0,
+      "2500": 0.85
+    }
+  },
+  "life": {
+    "incomeReplacementYears": 10,
+    "defaultFinalExpenses": 15000,
+    "defaultCollegeFund": 100000
+  },
+  "disability": {
+    "incomeReplacementPercentage": 0.65,
+    "benefitPeriodMultiplier": {
+      "5": 0.8,
+      "10": 0.9,
+      "65": 1.0
+    },
+    "waitingPeriodMultiplier": {
+      "30": 1.2,
+      "60": 1.1,
+      "90": 1.0
+    }
+  },
+  "health": {
+    "fpl": {
+      "base": 15060,
+      "perPerson": 5380
+    },
+    "plans": {
+      "bronze": { "premium": 350, "deductible": 7000, "oopMax": 9000, "isHSA": false },
+      "silver": { "premium": 480, "deductible": 4500, "oopMax": 8500, "isHSA": false },
+      "gold": { "premium": 590, "deductible": 1500, "oopMax": 7000, "isHSA": false },
+      "platinum": { "premium": 750, "deductible": 200, "oopMax": 4000, "isHSA": false },
+      "hdhp": { "premium": 400, "deductible": 6000, "oopMax": 7500, "isHSA": true }
+    },
+    "subsidy": {
+      "maxContributionPercent": 0.085
+    },
+    "hsa": {
+      "assumedTaxRate": 0.22
+    }
+  },
+  "pet": {
+    "baseRate": 30,
+    "ageMultiplier": {
+      "young": 1.1,
+      "adult": 1.0,
+      "senior": 1.6
+    },
+    "deductibleMultiplier": {
+      "250": 1.2,
+      "500": 1.0,
+      "750": 0.9
+    },
+    "reimbursementMultiplier": {
+      "70": 0.9,
+      "80": 1.0,
+      "90": 1.15
+    },
+    "limitMultiplier": {
+      "5000": 1.0,
+      "10000": 1.1,
+      "15000": 1.25
+    },
+    "wellnessPlanCost": 25,
+    "breeds": {
+      "mixed_small": { "name": "Mixed Breed (Small)", "risk": 1.0, "issues": [{"name": "Dental Disease", "cost": 800}] },
+      "mixed_medium": { "name": "Mixed Breed (Medium)", "risk": 1.1, "issues": [{"name": "Skin Allergies", "cost": 1200}] },
+      "mixed_large": { "name": "Mixed Breed (Large)", "risk": 1.2, "issues": [{"name": "Hip Dysplasia", "cost": 5000}] },
+      "labrador": { "name": "Labrador Retriever", "risk": 1.25, "issues": [{"name": "ACL Tear", "cost": 4000}, {"name": "Ear Infections", "cost": 500}] },
+      "french_bulldog": { "name": "French Bulldog", "risk": 1.8, "issues": [{"name": "Brachycephalic Syndrome", "cost": 3000}, {"name": "Skin Fold Dermatitis", "cost": 700}] },
+      "german_shepherd": { "name": "German Shepherd", "risk": 1.4, "issues": [{"name": "Hip Dysplasia", "cost": 5000}, {"name": "Bloat (GDV)", "cost": 6000}] },
+      "domestic_shorthair": { "name": "Domestic Shorthair (Cat)", "risk": 0.9, "issues": [{"name": "Urinary Tract Infection", "cost": 1000}] }
+    }
+  }
+}

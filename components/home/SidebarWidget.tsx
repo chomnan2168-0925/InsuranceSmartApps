@@ -1,3 +1,4 @@
+// FIX: Replaced placeholder content with a functional SidebarWidget component.
 import React from 'react';
 
 interface SidebarWidgetProps {
@@ -7,11 +8,11 @@ interface SidebarWidgetProps {
 
 const SidebarWidget: React.FC<SidebarWidgetProps> = ({ title, children }) => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+    <div className="bg-white p-6 rounded-lg shadow-md">
       <h3 className="text-xl font-bold text-navy-blue border-b-2 border-gold pb-2 mb-4">
         {title}
       </h3>
-      <div>{children}</div>
+      {children}
     </div>
   );
 };

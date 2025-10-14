@@ -1,1 +1,53 @@
-full contents of data/sampleMarketingReports.json
+{
+  "reports": {
+    "annual-2024-summary": {
+      "id": "annual-2024-summary",
+      "title": "2024 Annual Performance Summary",
+      "data": [
+        { "month": "2024-01", "totalVisitors": 95000, "pageviews": 300000, "avgSessionDuration": 210, "bounceRate": 44.5 },
+        { "month": "2024-02", "totalVisitors": 102000, "pageviews": 320000, "avgSessionDuration": 215, "bounceRate": 43.2 },
+        { "month": "2024-03", "totalVisitors": 110000, "pageviews": 340000, "avgSessionDuration": 220, "bounceRate": 42.8 },
+        { "month": "2024-04", "totalVisitors": 120000, "pageviews": 360000, "avgSessionDuration": 225, "bounceRate": 41.5 },
+        { "month": "2024-05", "totalVisitors": 125000, "pageviews": 380000, "avgSessionDuration": 230, "bounceRate": 40.9 },
+        { "month": "2024-06", "totalVisitors": 130000, "pageviews": 400000, "avgSessionDuration": 235, "bounceRate": 40.2 },
+        { "month": "2024-07", "totalVisitors": 140000, "pageviews": 420000, "avgSessionDuration": 240, "bounceRate": 39.8 },
+        { "month": "2024-08", "totalVisitors": 145000, "pageviews": 430000, "avgSessionDuration": 245, "bounceRate": 39.5 },
+        { "month": "2024-09", "totalVisitors": 150000, "pageviews": 450000, "avgSessionDuration": 250, "bounceRate": 38.9 },
+        { "month": "2024-10", "totalVisitors": 155000, "pageviews": 470000, "avgSessionDuration": 255, "bounceRate": 38.2 },
+        { "month": "2024-11", "totalVisitors": 160000, "pageviews": 490000, "avgSessionDuration": 260, "bounceRate": 37.8 },
+        { "month": "2024-12", "totalVisitors": 165000, "pageviews": 500000, "avgSessionDuration": 265, "bounceRate": 37.5 }
+      ],
+      "topSources": [
+        { "source": "Organic Search", "visitors": 900000, "percentage": 45 },
+        { "source": "Direct", "visitors": 550000, "percentage": 28 },
+        { "source": "Social Media", "visitors": 300000, "percentage": 15 },
+        { "source": "Referral", "visitors": 200000, "percentage": 10 }
+      ],
+      "topPages": [
+        { "path": "/", "views": 400000 },
+        { "path": "/insurance-tips", "views": 350000 },
+        { "path": "/calculators", "views": 250000 }
+      ]
+    },
+    "q1-2024-summary": {
+      "id": "q1-2024-summary",
+      "title": "Q1 2024 Performance Summary",
+      "period": "January 1, 2024 - March 31, 2024",
+      "data": [
+        { "month": "2024-01", "totalVisitors": 350000, "pageviews": 1200000, "avgEngagementTime": 3.5 },
+        { "month": "2024-02", "totalVisitors": 380000, "pageviews": 1600000, "avgEngagementTime": 3.7 },
+        { "month": "2024-03", "totalVisitors": 420000, "pageviews": 1989123, "avgEngagementTime": 3.8 }
+      ],
+      "topSources": [
+        { "source": "Organic Search", "visitors": 720000, "percentage": 62.5 },
+        { "source": "Direct", "visitors": 260000, "percentage": 22.6 },
+        { "source": "Social Media", "visitors": 100000, "percentage": 8.7 }
+      ],
+      "topPages": [
+        { "path": "/insurance-tips/understanding-401k-options", "views": 380000 },
+        { "path": "/", "views": 310000 },
+        { "path": "/calculators", "views": 150000 }
+      ]
+    }
+  }
+}

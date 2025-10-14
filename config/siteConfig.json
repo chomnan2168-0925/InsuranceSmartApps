@@ -1,5 +1,8 @@
 {
-  "siteName": "Hybrid Advisor",
+  "siteName": "Insurance SmartApps",
+  "siteUrl": "https://www.InsuranceSmartCalculator.com",
+  "contactEmail": "contact@InsuranceSmartCalculator.com",
+  "copyright": "© 2026 Insurance SmartApps. All Rights Reserved.",
   "navLinks": [
     {
       "title": "Home",
@@ -12,12 +15,12 @@
       "icon": "/assets/icons/calculator.svg"
     },
     {
-      "title": "Financial Tips",
-      "href": "/tips",
+      "title": "Insurance Tips",
+      "href": "/insurance-tips",
       "icon": "/assets/icons/tips.svg"
     },
     {
-      "title": "Market News",
+      "title": "Newsroom",
       "href": "/newsroom",
       "icon": "/assets/icons/news.svg"
     },
@@ -33,14 +36,38 @@
     }
   ],
   "footerLinks": [
-    { "title": "Our Story", "href": "/our-story" },
-    { "title": "Advertise", "href": "/advertise" },
-    { "title": "Privacy Policy", "href": "/privacy-policy" },
-    { "title": "Terms of Use", "href": "/terms-of-use" }
+    {
+      "title": "Our Story",
+      "href": "/our-story",
+      "icon": "/assets/icons/story.svg"
+    },
+    {
+      "title": "Advertise With Us",
+      "href": "/advertise",
+      "icon": "/assets/icons/news.svg"
+    },
+    {
+      "title": "Ask an Expert",
+      "href": "/ask-an-expert",
+      "icon": "/assets/icons/expert.svg"
+    }
   ],
   "socialLinks": [
-    { "name": "Facebook", "url": "https://facebook.com", "icon": "/assets/icons/facebook.svg" },
-    { "name": "LinkedIn", "url": "https://linkedin.com", "icon": "/assets/icons/linkedin.svg" }
+    {
+      "name": "Facebook",
+      "url": "https://facebook.com/",
+      "icon": "/assets/icons/facebook.svg"
+    },
+    {
+      "name": "LinkedIn",
+      "url": "https://linkedin.com/",
+      "icon": "/assets/icons/linkedin.svg"
+    },
+    {
+      "name": "YouTube",
+      "url": "https://youtube.com/",
+      "icon": "/assets/icons/youtube.svg"
+    }
   ],
   "askAnExpertSubjects": [
     "Retirement Planning",
