@@ -67,7 +67,7 @@ const ShareMetaTags: React.FC<ShareMetaTagsProps> = ({
   };
 
   const metaData = getMetaData();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yoursite.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://insurancesmartcalculator.com';
 
   return (
     <Head>
