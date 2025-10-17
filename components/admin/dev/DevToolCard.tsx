@@ -1,4 +1,5 @@
 import React from 'react';
+import withAuth from '@/components/auth/withAuth';
 
 interface DevToolCardProps {
   title: string;
@@ -18,4 +19,4 @@ const DevToolCard: React.FC<DevToolCardProps> = ({ title, description, children 
   );
 };
 
-export default DevToolCard;
+export default withAuth(DevToolCard);
