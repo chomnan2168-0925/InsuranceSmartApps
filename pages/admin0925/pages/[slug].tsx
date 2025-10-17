@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import SectionHeader from '@/components/ui/SectionHeader';
 import StaticPageData from '@/data/StaticPageData.json';
 import AdvancedRichTextEditor from '@/components/admin/content/AdvancedRichTextEditor';
+import withAuth from '@/components/auth/withAuth';
 
 interface PageData {
   title: string;
@@ -92,4 +93,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return { props: { page: pageData, slug } };
 };
 
-export default EditStaticPage;
+export default withAuth(EditStaticPage);
