@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import SectionHeader from '@/components/ui/SectionHeader';
 import StaticPageData from '@/data/StaticPageData.json';
+import withAuth from '@/components/auth/withAuth';
 
 const AdvertiseEditor = () => {
   const [pageData, setPageData] = useState({
@@ -172,4 +173,4 @@ const AdvertiseEditor = () => {
   );
 };
 
-export default AdvertiseEditor;
+export default withAuth (AdvertiseEditor);
