@@ -8,6 +8,7 @@ import GeneralSettingsTab from '@/components/admin/settings/GeneralSettingsTab';
 import CalculatorDataTab from '@/components/admin/settings/CalculatorDataTab';
 import MarketingTab from '@/components/admin/settings/MarketingTab';
 import AdManagerTab from '@/components/admin/settings/AdManagerTab';
+import withAuth from '@/components/auth/withAuth';
 
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('General');
@@ -32,4 +33,4 @@ const SettingsPage = () => {
   );
 };
 
-export default SettingsPage;
+export default withAuth(SettingsPage);
