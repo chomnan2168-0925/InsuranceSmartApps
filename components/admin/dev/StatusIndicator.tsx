@@ -1,4 +1,5 @@
 import React from 'react';
+import withAuth from '@/components/auth/withAuth';
 
 // Define the possible statuses
 type Status = 'operational' | 'degraded' | 'error' | 'loading';
@@ -33,4 +34,4 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status, label }) => {
   );
 };
 
-export default StatusIndicator;
+export default withAuth(StatusIndicator);
