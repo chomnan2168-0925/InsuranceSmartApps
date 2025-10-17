@@ -2,6 +2,7 @@
 
 import React from 'react';
 import MediaLibrary from '@/components/admin/media/MediaLibrary';
+import withAuth from '@/components/auth/withAuth';
 
 const MediaPage = () => {
   return (
@@ -11,4 +12,4 @@ const MediaPage = () => {
   );
 };
 
-export default MediaPage;
+export default withAuth(MediaPage);
