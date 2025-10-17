@@ -2,6 +2,7 @@
 
 import React from 'react';
 import AnalyticsDashboard from '@/components/admin/analytics/AnalyticsDashboard';
+import withAuth from '@/components/auth/withAuth';
 
 const AnalyticsPage = () => {
   return (
@@ -11,4 +12,4 @@ const AnalyticsPage = () => {
   );
 };
 
-export default AnalyticsPage;
+export default withAuth(AnalyticsPage);
