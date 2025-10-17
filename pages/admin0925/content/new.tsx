@@ -2,6 +2,7 @@
 
 import React from 'react';
 import EditArticle from '@/components/admin/content/EditArticle';
+import withAuth from '@/components/auth/withAuth';
 
 const NewArticlePage = () => {
   return (
@@ -11,4 +12,4 @@ const NewArticlePage = () => {
   );
 };
 
-export default NewArticlePage;
+export default withAuth (NewArticlePage);
