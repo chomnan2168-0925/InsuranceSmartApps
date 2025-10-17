@@ -3,6 +3,8 @@ import SectionHeader from '@/components/ui/SectionHeader';
 import DevToolCard from './DevToolCard';
 import StatusIndicator from './StatusIndicator';
 import { supabase } from '@/lib/supabaseClient'; // --- ADDED IMPORT ---
+import withAuth from '@/components/auth/withAuth';
+
 
 const DevAdminDashboard = () => {
   const [isClient, setIsClient] = useState(false);
@@ -111,4 +113,4 @@ const DevAdminDashboard = () => {
   );
 };
 
-export default DevAdminDashboard;
+export default withAuth(DevAdminDashboard);
