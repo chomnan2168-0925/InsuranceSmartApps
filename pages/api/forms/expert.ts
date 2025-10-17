@@ -1,5 +1,6 @@
 // pages/api/forms/expert.ts
 import { NextApiRequest, NextApiResponse } from 'next';
+import crypto from 'crypto';
 
 // ⚠️ IMPORTANT: No NEXT_PUBLIC_ prefix - this should be server-only
 const EXPERT_SHEET_URL = process.env.SHEETDB_EXPERT_API;
@@ -9,9 +10,28 @@ const rateLimitMap = new Map<string, number[]>();
 const RATE_LIMIT_WINDOW = 60000; // 1 minute
 const MAX_REQUESTS = 5; // Max 5 submissions per minute per IP
 
+// Cleanup old rate limit entries every minute to prevent memory leaks
+setInterval(() => {
+  const now = Date.now();
+  rateLimitMap.forEach((timestamps, key) => {
+    const recent = timestamps.filter(t => now - t < RATE_LIMIT_WINDOW);
+    if (recent.length === 0) {
+      rateLimitMap.delete(key);
+    } else {
+      rateLimitMap.set(key, recent);
+    }
+  });
+}, 60000);
+
+// Hash IP for privacy compliance
+function hashIP(ip: string): string {
+  return crypto.createHash('sha256').update(ip + 'expert-salt').digest('hex').substring(0, 16);
+}
+
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
-  const timestamps = rateLimitMap.get(ip) || [];
+  const hashedIP = hashIP(ip);
+  const timestamps = rateLimitMap.get(hashedIP) || [];
   
   // Remove old timestamps outside the window
   const recentTimestamps = timestamps.filter(t => now - t < RATE_LIMIT_WINDOW);
@@ -21,7 +41,7 @@ function checkRateLimit(ip: string): boolean {
   }
   
   recentTimestamps.push(now);
-  rateLimitMap.set(ip, recentTimestamps);
+  rateLimitMap.set(hashedIP, recentTimestamps);
   return true;
 }
 
@@ -32,25 +52,43 @@ function validateExpertInput(data: any): { valid: boolean; errors: string[] } {
   // Required fields
   if (!data.name || typeof data.name !== 'string' || data.name.trim().length === 0) {
     errors.push('Name is required');
+  } else if (data.name.trim().length > 100) {
+    errors.push('Name is too long (max 100 characters)');
   }
   
   if (!data.email || typeof data.email !== 'string') {
     errors.push('Email is required');
   } else {
-    // Basic email validation
+    // Basic email validation - SAFE regex (no ReDoS vulnerability)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(data.email)) {
       errors.push('Invalid email format');
+    } else if (data.email.length > 255) {
+      errors.push('Email is too long');
     }
   }
   
   if (!data.question || typeof data.question !== 'string' || data.question.trim().length === 0) {
     errors.push('Question is required');
+  } else if (data.question.length > 5000) {
+    errors.push('Question is too long (max 5000 characters)');
   }
   
-  // Optional: Check question length
-  if (data.question && data.question.length > 5000) {
-    errors.push('Question is too long (max 5000 characters)');
+  // Optional fields validation
+  if (data.subject && typeof data.subject === 'string' && data.subject.length > 200) {
+    errors.push('Subject is too long');
+  }
+  
+  if (data.country && typeof data.country === 'string' && data.country.length > 100) {
+    errors.push('Country name is too long');
+  }
+  
+  if (data.state && typeof data.state === 'string' && data.state.length > 100) {
+    errors.push('State name is too long');
+  }
+  
+  if (data.interests && typeof data.interests === 'string' && data.interests.length > 1000) {
+    errors.push('Interests list is too long');
   }
   
   return {
@@ -67,17 +105,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
   // Check if SheetDB URL is configured
   if (!EXPERT_SHEET_URL) {
-    console.error('[EXPERT] SheetDB API URL not configured');
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[EXPERT] SheetDB API URL not configured');
+    }
     return res.status(500).json({ message: 'Server configuration error. Please contact support.' });
   }
   
   try {
-    // Rate limiting
+    // Get IP address for rate limiting
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
     const ipString = Array.isArray(ip) ? ip[0] : ip;
     
+    // Rate limiting check
     if (!checkRateLimit(ipString)) {
-      console.warn(`[EXPERT] Rate limit exceeded for IP: ${ipString}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`[EXPERT] Rate limit exceeded for hashed IP`);
+      }
       return res.status(429).json({ 
         message: 'Too many requests. Please try again in a minute.' 
       });
@@ -86,7 +129,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Validate input
     const validation = validateExpertInput(req.body);
     if (!validation.valid) {
-      console.warn('[EXPERT] Validation failed:', validation.errors);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('[EXPERT] Validation failed:', validation.errors);
+      }
       return res.status(400).json({ 
         message: 'Invalid input', 
         errors: validation.errors 
@@ -105,14 +150,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Optional fields
       phone: req.body.phone?.trim() || '',
       topic: req.body.topic || req.body.subject || 'General',
-      // Metadata
+      // Metadata (no IP address stored for privacy)
       timestamp: new Date().toISOString(),
       submittedFrom: 'Website',
       status: 'Pending',
-      ipAddress: ipString,
     };
     
-    console.log('[EXPERT] Submitting question from:', submissionData.email);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[EXPERT] Submitting question from:', submissionData.email);
+    }
     
     // Submit to SheetDB
     const response = await fetch(EXPERT_SHEET_URL, {
@@ -125,13 +171,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
     
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('[EXPERT] SheetDB error:', response.status, errorText);
-      throw new Error(`Failed to save question. Status: ${response.status}`);
+      if (process.env.NODE_ENV === 'development') {
+        const errorText = await response.text();
+        console.error('[EXPERT] SheetDB error:', response.status, errorText);
+      }
+      throw new Error('Failed to save question');
     }
     
     const result = await response.json();
-    console.log('[EXPERT] Successfully saved question:', result);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[EXPERT] Successfully saved question:', result);
+    }
     
     return res.status(200).json({ 
       message: 'Thank you! Your question has been submitted. Our experts will respond soon.',
@@ -139,7 +189,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
     
   } catch (error: any) {
-    console.error('[EXPERT] Error submitting to SheetDB:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[EXPERT] Error submitting to SheetDB:', error);
+    }
     return res.status(500).json({ 
       message: 'Failed to submit your question. Please try again later or contact us directly.',
       success: false
