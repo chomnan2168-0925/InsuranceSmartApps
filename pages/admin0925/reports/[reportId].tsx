@@ -6,6 +6,7 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tool
 import MarketingStatsChart from '@/components/marketing/MarketingStatsChart';
 import { MarketingReportsData } from '@/types/marketing';
 import type { ReportSummaryData, ReportDataItem } from '../../../types';
+import withAuth from '@/components/auth/withAuth';
 
 // Type guard to check if data is ReportSummaryData
 function isReportSummaryData(data: any): data is ReportSummaryData {
@@ -479,4 +480,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default ReportEditorPage;
+export default withAuth (ReportEditorPage);
