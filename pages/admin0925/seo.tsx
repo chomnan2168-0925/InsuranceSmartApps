@@ -4,6 +4,7 @@ import React from 'react';
 
 // THIS IS THE CORRECTED IMPORT PATH
 import SeoHub from '@/components/admin/seo/SeoHub';
+import withAuth from '@/components/auth/withAuth';
 
 const SeoPage = () => {
   return (
@@ -13,4 +14,4 @@ const SeoPage = () => {
   );
 };
 
-export default SeoPage;
+export default withAuth(SeoPage);
