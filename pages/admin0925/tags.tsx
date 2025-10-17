@@ -1,6 +1,7 @@
 import React from 'react';
 import SectionHeader from '@/components/ui/SectionHeader';
 import TagManager from '@/components/admin/seo/TagManager';
+import withAuth from '@/components/auth/withAuth';
 
 const TagsManagementPage = () => {
   return (
@@ -13,4 +14,4 @@ const TagsManagementPage = () => {
   );
 };
 
-export default TagsManagementPage;
+export default withAuth (TagsManagementPage);
