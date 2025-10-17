@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import SectionHeader from '@/components/ui/SectionHeader';
 import StaticPageData from '@/data/StaticPageData.json';
+import withAuth from '@/components/auth/withAuth';
 
 const PagesManagementPage = () => {
   const pages = Object.entries(StaticPageData);
@@ -54,4 +55,4 @@ const PagesManagementPage = () => {
   );
 };
 
-export default PagesManagementPage;
+export default withAuth(PagesManagementPage);
