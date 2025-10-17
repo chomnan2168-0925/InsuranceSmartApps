@@ -2,6 +2,7 @@
 
 import React from 'react';
 import UserManagement from '@/components/admin/users/UserManagement';
+import withAuth from '@/components/auth/withAuth';
 
 const UsersPage = () => {
   return (
@@ -11,4 +12,4 @@ const UsersPage = () => {
   );
 };
 
-export default UsersPage;
+export default withAuth(UsersPage);
