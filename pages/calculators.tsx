@@ -49,8 +49,8 @@ const PetIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5
 // SEO Configuration for Each Calculator
 const calculatorSEO = {
   auto: {
-    title: "Free Auto Insurance Calculator | Get Accurate Car Insurance Quotes 2024",
-    description: "Calculate your auto insurance premium instantly with our smart calculator. Get personalized car insurance quotes based on vehicle type, driving record, coverage options, and discounts. Free estimates in seconds.",
+    title: "Auto Insurance Calculators | No Signup - Try now for free",
+    description: "Stop overpaying for car insurance with our advanced calculator app. Simply enter your car details, driving history, and coverage preferences to see your estimated premium in seconds. Free, fast, and accurate based on your location. Get instant results compared to the market.",
     keywords: "auto insurance calculator, car insurance quote, vehicle insurance estimate, auto premium calculator, car insurance cost estimator, driving record discount calculator",
     h2: "Smart Auto Insurance Premium Calculator with Real-Time Quotes",
     content: "Our advanced auto insurance calculator provides accurate premium estimates using comprehensive risk analysis. Calculate costs based on vehicle make/model/year, driver demographics (age, gender, marital status), annual mileage, coverage selections (liability limits, collision, comprehensive, uninsured motorist), deductible amounts ($250-$2500), and available discounts (multi-policy, good driver, safety features, anti-theft devices). Compare liability insurance costs, collision coverage premiums, comprehensive insurance rates, and uninsured/underinsured motorist protection. Get instant car insurance quotes for sedans, SUVs, trucks, sports cars, and luxury vehicles. Factor in teen driver costs, senior discounts, and low mileage savings.",
