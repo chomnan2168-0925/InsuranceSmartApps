@@ -1,6 +1,7 @@
 import React from 'react';
 // We no longer need to import AdminLayout here
 import ContentList from '@/components/admin/content/ContentList';
+import withAuth from '@/components/auth/withAuth';
 
 const ContentListPage = () => {
   // The page now ONLY returns its direct content.
@@ -8,4 +9,4 @@ const ContentListPage = () => {
   return <ContentList />;
 };
 
-export default ContentListPage;
+export default withAuth (ContentListPage);
