@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import EditArticle from '@/components/admin/content/EditArticle';
+import withAuth from '@/components/auth/withAuth';
 
 const EditArticlePage = () => {
   const router = useRouter();
@@ -25,4 +26,4 @@ const EditArticlePage = () => {
   );
 };
 
-export default EditArticlePage;
+export default withAuth (EditArticlePage);
