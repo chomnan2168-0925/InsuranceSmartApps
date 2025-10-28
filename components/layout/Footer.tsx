@@ -115,11 +115,15 @@ const Footer = () => {
             <p className="text-xs md:text-sm text-gray-400 text-center md:text-left">{copyright}</p>
             <div className="flex items-center gap-2 md:gap-4 text-xs text-gray-400">
               <Link href="/privacy-policy" className="hover:text-gold transition-colors">
-                Privacy
+                Privacy Policy
               </Link>
               <span>•</span>
               <Link href="/terms-of-use" className="hover:text-gold transition-colors">
-                Terms
+                Terms of Use
+              </Link>
+              <span>•</span>
+              <Link href="/cookie-policy" className="hover:text-gold transition-colors">
+                Cookie Policy
               </Link>
               <span>•</span>
               <Link href="/sitemap" className="hover:text-gold transition-colors">

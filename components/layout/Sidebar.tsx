@@ -55,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ topTips, topNews }) => {
       <SidebarAd />
 
       {topTips.length > 0 && (
-        <ul className="space-y-3">
+        <ul className="space-y-2">
           {topTips.map((tip) => (
             <SidebarArticleCard key={`tip-${tip.id}`} article={tip} />
           ))}
@@ -66,7 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({ topTips, topNews }) => {
       <SidebarAd />
 
       {topNews.length > 0 && (
-        <ul className="space-y-3">
+        <ul className="space-y-2">
           {topNews.map((news) => (
             <SidebarArticleCard key={`news-${news.id}`} article={news} />
           ))}

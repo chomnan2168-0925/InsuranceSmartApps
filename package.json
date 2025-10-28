@@ -4,10 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run sitemap && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "sitemap": "node ./scripts/generate-sitemap.js"
+    "sitemap:generate": "node ./scripts/generate-sitemap.js",
+    "sitemap:validate": "node ./scripts/validate-sitemap.js",
+    "type-check": "tsc --noEmit",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@google-analytics/data": "^5.2.0",

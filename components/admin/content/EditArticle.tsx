@@ -28,18 +28,50 @@ const createImageSlug = (text: string): string => {
     .substring(0, 100);
 };
 
+// Author interface
+interface Author {
+  id: string;
+  name: string;
+  role: string;
+}
+
 const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
   const router = useRouter();
   const [article, setArticle] = useState<Partial<Article>>({
     title: '', slug: '', excerpt: '', content: '', category: 'Insurance Newsroom', status: 'Draft', 
     tags: [], label: null, imageUrl: '', metaTitle: '', metaDescription: '', targetKeyword: '',
-    show_author: true, show_publish_date: true
+    author_id: undefined
   });
 
   const isNewArticle = !articleId;
   const [loading, setLoading] = useState(!isNewArticle);
   const [statusMessage, setStatusMessage] = useState('');
-  const imageCounterRef = useRef(1); // Track multiple images for naming
+  const imageCounterRef = useRef(1);
+  
+  // NEW: Authors state
+  const [authors, setAuthors] = useState<Author[]>([]);
+  const [loadingAuthors, setLoadingAuthors] = useState(true);
+
+  // NEW: Fetch authors on component mount
+  useEffect(() => {
+    const fetchAuthors = async () => {
+      setLoadingAuthors(true);
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, name, role')
+        .order('name', { ascending: true });
+      
+      if (error) {
+        console.error('Error fetching authors:', error);
+        setAuthors([]);
+      } else {
+        setAuthors(data || []);
+      }
+      setLoadingAuthors(false);
+    };
+
+    fetchAuthors();
+  }, []);
 
   useEffect(() => {
     if (isNewArticle) {
@@ -62,11 +94,9 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
         console.error("Error fetching article:", error);
         setTimeout(() => router.push('/admin0925/content'), 2000);
       } else {
-        // Ensure display options have default values
         setArticle({
           ...data,
-          show_author: data.show_author !== undefined ? data.show_author : true,
-          show_publish_date: data.show_publish_date !== undefined ? data.show_publish_date : true
+          author_id: data.author_id || null
         });
       }
       setLoading(false);
@@ -104,6 +134,15 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
     setArticle(prev => ({ ...prev, slug: value }));
   };
 
+  // NEW: Handle author selection
+  const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setArticle(prev => ({ 
+      ...prev, 
+      author_id: value === '' ? undefined : value 
+    }));
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setStatusMessage('Saving...');
@@ -121,6 +160,12 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
     }
     if (!finalArticle.metaDescription) {
       finalArticle.metaDescription = finalArticle.excerpt;
+    }
+
+    // If no author selected, use the first available author
+    if (!finalArticle.author_id && authors.length > 0) {
+      finalArticle.author_id = authors[0].id;
+      setStatusMessage('No author selected, using default author...');
     }
     
     if (isNewArticle) {
@@ -151,7 +196,7 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
     window.open(previewUrl, '_blank');
   };
 
-  // UPDATED: Image upload with SEO-friendly naming
+  // Image upload with SEO-friendly naming
   const imageUploadHandler = (blobInfo: any, progress: (percent: number) => void): Promise<string> => 
     new Promise((resolve, reject) => {
       if (!CLOUDINARY_UPLOAD_PRESET) { 
@@ -159,7 +204,6 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
         return; 
       }
 
-      // Check if article has a title
       if (!article.title || article.title.trim() === '') {
         reject("Please enter an article title before uploading images.");
         return;
@@ -169,7 +213,6 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
       formData.append('file', blobInfo.blob(), blobInfo.filename());
       formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
       
-      // Generate SEO-friendly public_id
       const articleSlug = createImageSlug(article.title || '');
       const count = imageCounterRef.current;
       const publicId = count === 1 
@@ -178,8 +221,6 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
       
       formData.append('public_id', publicId);
       formData.append('folder', 'articles');
-      
-      // Add context for metadata
       formData.append('context', `alt=${article.title}|article_title=${article.title}`);
       
       imageCounterRef.current += 1;
@@ -196,14 +237,13 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
       .catch(err => reject(`Image upload failed: ${err}`));
     });
 
-  // UPDATED: Cloudinary widget with SEO-friendly naming
+  // Cloudinary widget with SEO-friendly naming
   const openCloudinaryWidget = (onSuccess: (url: string) => void) => {
     if (!(window as any).cloudinary) { 
       alert("Cloudinary script not loaded."); 
       return; 
     }
 
-    // Check if article has a title
     if (!article.title || article.title.trim() === '') {
       alert("Please enter an article title before uploading images.");
       return;
@@ -217,23 +257,15 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
         apiKey: CLOUDINARY_API_KEY, 
         uploadPreset: CLOUDINARY_UPLOAD_PRESET, 
         multiple: false,
-        
-        // SEO-friendly naming
         folder: 'articles',
         publicId: count === 1 ? articleSlug : `${articleSlug}-${count}`,
-        
-        // Add metadata
         context: {
           custom: {
             alt: article.title,
             article_title: article.title,
           }
         },
-        
-        // Tags for organization
         tags: ['article-image', article.category || 'uncategorized'],
-        
-        // UI customization
         styles: {
           palette: {
             window: '#FFFFFF',
@@ -326,7 +358,6 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
                 onChange={handleContentChange}
                 imageUploadHandler={imageUploadHandler}
                 onCloudinaryClick={() => openCloudinaryWidget(url => {
-                  // Insert image at cursor position in editor
                   const img = `<img src="${url}" alt="${article.title || ''}" style="max-width: 100%;" />`;
                   setArticle(prev => ({ 
                     ...prev, 
@@ -340,43 +371,46 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
           <div className="space-y-2">
             <div className="bg-white p-3 rounded-lg shadow-md space-y-2">
               <h3 className="text-lg font-bold text-navy-blue border-b pb-0 pt-0">Publish Settings</h3>
-              <div>
-                  <label htmlFor="status" className="block text-sm font-bold text-gray-700">Status</label>
-                  <select id="status" name="status" value={article.status} onChange={handleChange} className="mt-1 block w-full pl-3 pr-10 py-1 pb-1 pt-0 text-base border-gray-300 rounded-md">
-                      <option>Draft</option>
-                      <option>Published</option>
-                  </select>
-              </div>
               
-              {/* Display Options */}
-              <div className="space-y-2 pt-2 border-t">
-                <h4 className="text-sm font-bold text-gray-700">Display Options</h4>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="show_author"
-                    name="show_author"
-                    checked={article.show_author || false}
-                    onChange={handleChange}
-                    className="h-4 w-4 text-navy-blue focus:ring-navy-blue border-gray-300 rounded"
-                  />
-                  <label htmlFor="show_author" className="ml-2 text-sm text-gray-700">
-                    Show Author Info
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="show_publish_date"
-                    name="show_publish_date"
-                    checked={article.show_publish_date || false}
-                    onChange={handleChange}
-                    className="h-4 w-4 text-navy-blue focus:ring-navy-blue border-gray-300 rounded"
-                  />
-                  <label htmlFor="show_publish_date" className="ml-2 text-sm text-gray-700">
-                    Show Publish Date
-                  </label>
-                </div>
+              <div>
+                <label htmlFor="status" className="block text-sm font-bold text-gray-700">Status</label>
+                <select id="status" name="status" value={article.status} onChange={handleChange} className="mt-1 block w-full pl-3 pr-10 py-1 pb-1 pt-0 text-base border-gray-300 rounded-md">
+                  <option>Draft</option>
+                  <option>Published</option>
+                </select>
+              </div>
+
+              {/* NEW: Author Selector */}
+              <div>
+                <label htmlFor="author_id" className="block text-sm font-bold text-gray-700">
+                  Author
+                  <span className="text-xs font-normal text-gray-500 ml-2">
+                    (Who wrote this article?)
+                  </span>
+                </label>
+                {loadingAuthors ? (
+                  <div className="mt-1 text-sm text-gray-500">Loading authors...</div>
+                ) : (
+                  <select 
+                    id="author_id" 
+                    name="author_id" 
+                    value={article.author_id || ''} 
+                    onChange={handleAuthorChange}
+                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-navy-blue focus:border-navy-blue rounded-md"
+                  >
+                    <option value="">-- Select Author --</option>
+                    {authors.map((author) => (
+                      <option key={author.id} value={author.id}>
+                        {author.name} ({author.role})
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {!article.author_id && authors.length > 0 && (
+                  <p className="text-xs text-orange-600 mt-1">
+                    ⚠️ If no author is selected, the first author will be assigned by default
+                  </p>
+                )}
               </div>
 
               <div className="flex flex-col sm:flex-row sm:justify-center gap-2 pt-2 border-t">

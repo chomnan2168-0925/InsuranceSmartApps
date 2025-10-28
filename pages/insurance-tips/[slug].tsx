@@ -17,7 +17,6 @@ const TipArticlePage: React.FC<ArticlePageProps> = (props) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  // Fetch all published Insurance Tips article slugs
   const { data: articles, error } = await supabase
     .from('articles')
     .select('slug')
@@ -35,21 +34,26 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return { 
     paths, 
-    fallback: 'blocking' // Generate pages on-demand for new articles
+    fallback: 'blocking'
   };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const slug = params?.slug as string;
 
-  // Fetch the main article with author information
+  // Fetch article with FULL author information
   const { data: post, error } = await supabase
     .from('articles')
     .select(`
       *,
-      profiles:author_id (
+      author:profiles!author_id (
         id,
-        name
+        name,
+        role,
+        bio,
+        avatar_url,
+        specialty,
+        credentials
       )
     `)
     .eq('slug', slug)
@@ -62,20 +66,10 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     return { notFound: true };
   }
 
-  // Transform author data
-  if (post.profiles) {
-    post.author = {
-      name: post.profiles.name,
-      avatarUrl: '/images/default-avatar.png',
-    };
-    delete post.profiles; // Clean up the join data
-  }
-
-  // Ensure date field for backwards compatibility
   post.date = post.published_date || post.created_at;
 
-  // Fetch recommended posts (same category, exclude current)
-  const { data: recommendedData } = await supabase
+  // Fetch manually assigned "Don't Miss!" articles for Article View Pages
+  let { data: recommendedData } = await supabase
     .from('articles')
     .select(`
       id,
@@ -86,15 +80,35 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       category,
       created_at,
       published_date,
-      tags
+      tags,
+      label,
+      featured_locations,
+      author:profiles!author_id (
+        id,
+        name
+      )
     `)
     .eq('status', 'Published')
-    .eq('category', 'Insurance Tips')
-    .neq('id', post.id)
-    .order('created_at', { ascending: false })
-    .limit(3);
+    .eq('label', "Don't Miss!");
+  
+  // Filter for articles assigned to "Article View Pages"
+  if (recommendedData && recommendedData.length > 0) {
+    recommendedData = recommendedData.filter(article => {
+      if (!article.featured_locations) return false;
+      
+      if (Array.isArray(article.featured_locations)) {
+        return article.featured_locations.includes('Article View Pages');
+      }
+      
+      if (typeof article.featured_locations === 'string') {
+        return article.featured_locations.includes('Article View Pages');
+      }
+      
+      return false;
+    });
+  }
 
-  // Fetch sidebar tips
+  // Fetch sidebar tips (excluding current article)
   const { data: sidebarTipsData } = await supabase
     .from('articles')
     .select('id, slug, title, excerpt, imageUrl, category, created_at, published_date')
@@ -110,21 +124,20 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .select('id, slug, title, excerpt, imageUrl, category, created_at, published_date')
     .eq('status', 'Published')
     .eq('category', 'Insurance Newsroom')
-    .neq('id', post.id)
     .order('created_at', { ascending: false })
     .limit(3);
 
-// 🆕 Fetch ad slots data
-const { data: adData } = await supabase
-  .from('site_settings')
-  .select('value')
-  .eq('key', 'ad_slots')
-  .single();
+  // Fetch ad slots data
+  const { data: adData } = await supabase
+    .from('site_settings')
+    .select('value')
+    .eq('key', 'ad_slots')
+    .single();
 
-const adSlots = adData?.value || {};
-const inpostAd = adSlots.inpost || null;
+  const adSlots = adData?.value || {};
+  const inpostAd = adSlots.inpost || null;
 
-  // Transform dates for all fetched articles
+  // Transform dates
   const transformDates = (articles: any[]) => 
     articles.map(a => ({ ...a, date: a.published_date || a.created_at }));
 
@@ -136,7 +149,7 @@ const inpostAd = adSlots.inpost || null;
       sidebarTopNews: transformDates(sidebarNewsData || []),
       inpostAd,
     },
-    revalidate: 600, // Re-generate every 10 minutes
+    revalidate: 600,
   };
 };
 

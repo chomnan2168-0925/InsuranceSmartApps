@@ -4,9 +4,14 @@
  */
 
 export interface Author {
+  id: string;           // ✅ ADD: Author UUID from profiles table
   name: string;
-  avatarUrl: string;
+  role?: string;        // ✅ ADD: Author role (Admin, Author, etc.)
+  avatar_url?: string;  // ✅ ADD: From database (snake_case)
+  avatarUrl: string;    // KEEP: Backwards compatibility (was required, keeping it)
   bio?: string;
+  specialty?: string;   // ✅ ADD: Author specialty area
+  credentials?: string[]; // ✅ ADD: Author credentials array
 }
 
 /**

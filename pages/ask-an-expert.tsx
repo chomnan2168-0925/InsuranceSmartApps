@@ -1,16 +1,28 @@
 // /pages/ask-an-expert.tsx
 
 import React from 'react';
+import { GetStaticProps } from 'next';
 import SEO from '@/components/layout/SEO';
 import AskAnExpertForm from '@/components/forms/AskAnExpertForm';
 import AdPlacement from '@/components/layout/AdPlacement';
+import StaticPageData from '@/data/StaticPageData.json';
 
-const AskAnExpertPage = () => {
+interface AskAnExpertPageProps {
+  pageData: {
+    title: string;
+    tagline: string;
+    content: string;
+    seoTitle: string;
+    seoDescription: string;
+  };
+}
+
+const AskAnExpertPage: React.FC<AskAnExpertPageProps> = ({ pageData }) => {
   return (
     <>
       <SEO
-        title="Ask a Financial Expert for Free | Unbiased Advice | ISC"
-        description="Get free, unbiased answers to your financial questions. Ask our experts about insurance, retirement, or investing and get the clarity you need with no sales pitch."
+        title={pageData.seoTitle}
+        description={pageData.seoDescription}
       />
       
       <div className="container mx-auto px-3 pt-0 pb-4 md:pt-0 md:pb-6 max-w-5xl">
@@ -25,15 +37,16 @@ const AskAnExpertPage = () => {
               </div>
             </div>
             
-            {/* Title */}
+            {/* Title - Now from CMS */}
             <h1 className="text-xl md:text-2xl font-bold text-navy-blue">
-              Ask An Expert
+              {pageData.title}
             </h1>
             
-            {/* Subtitle */}
-            <p className="text-base text-gray-600 max-w-4xl mx-auto">
-              Have a question about insurance, investing, or planning for retirement? Submit it below to get a clear, unbiased answer from our team of financial experts. Our guidance is always free, and there's never a sales pitch.
-            </p>
+            {/* Subtitle - Now from CMS */}
+            <div 
+              className="text-base text-gray-600 max-w-4xl mx-auto"
+              dangerouslySetInnerHTML={{ __html: pageData.content }}
+            />
           </div>
         </section>
 
@@ -50,6 +63,17 @@ const AskAnExpertPage = () => {
       </div>
     </>
   );
+};
+
+export const getStaticProps: GetStaticProps = async () => {
+  const pageData = StaticPageData['ask-an-expert'];
+
+  return {
+    props: {
+      pageData,
+    },
+    revalidate: 86400, // Revalidate every 24 hours
+  };
 };
 
 export default AskAnExpertPage;

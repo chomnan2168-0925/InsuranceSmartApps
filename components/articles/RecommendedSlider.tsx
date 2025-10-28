@@ -50,7 +50,7 @@ const RecommendedSlider: React.FC<RecommendedSliderProps> = ({ articles, title =
 
   return (
     <section>
-      <div className="bg-white rounded-xl shadow-sm p-0">
+      <div className="bg-white rounded-xl shadow-sm p-3 pb-6 pt-4">
         {/* The title is now dynamic */}
         <h2 id={sliderId} className="text-2xl font-bold text-navy-blue text-center mb-3 -mt-3">
           {title}
@@ -87,7 +87,7 @@ const RecommendedSlider: React.FC<RecommendedSliderProps> = ({ articles, title =
                     
                     {/* NEW: Category tag added here */}
 
-                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
+                    <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
                       <h3 className="text-white font-semibold text-sm line-clamp-2 group-hover:underline">
                         {post.title}
                       </h3>

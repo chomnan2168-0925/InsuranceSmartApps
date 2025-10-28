@@ -1,5 +1,4 @@
 // /components/admin/settings/SettingsTabs.tsx
-
 import React from 'react';
 
 interface SettingsTabsProps {
@@ -7,7 +6,7 @@ interface SettingsTabsProps {
   setActiveTab: (tab: string) => void;
 }
 
-const TABS = ['General', 'Calculator Data', 'Marketing', 'Ad Management'];
+const TABS = ['General', 'Cookie Banner', 'Calculator Data', 'Marketing', 'Ad Management', 'Authors'];
 
 const SettingsTabs: React.FC<SettingsTabsProps> = ({ activeTab, setActiveTab }) => {
   return (

@@ -1,132 +1,53 @@
 // pages/api/admin/updateUser.ts
 import { createClient } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
-
-// Rate limiting
-const rateLimitMap = new Map<string, number[]>();
-const RATE_LIMIT_WINDOW = 60000;
-const MAX_REQUESTS = 20;
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const timestamps = rateLimitMap.get(ip) || [];
-  const recentTimestamps = timestamps.filter(t => now - t < RATE_LIMIT_WINDOW);
-  
-  if (recentTimestamps.length >= MAX_REQUESTS) {
-    return false;
-  }
-  
-  recentTimestamps.push(now);
-  rateLimitMap.set(ip, recentTimestamps);
-  return true;
-}
-
-// Sanitize input
-function sanitizeString(input: string): string {
-  return input
-    .trim()
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/[<>]/g, '');
-}
-
-// Authentication helper
-async function authenticateRequest(req: NextApiRequest) {
-  const authHeader = req.headers.authorization;
-  let token = authHeader?.replace('Bearer ', '');
-  
-  if (!token) {
-    token = req.cookies['sb-access-token'] || req.cookies['supabase-auth-token'];
-  }
-  
-  if (!token) {
-    return { authenticated: false, user: null };
-  }
-  
-  try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-    
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
-    const { data: { user }, error } = await supabase.auth.getUser(token);
-    
-    if (error || !user) {
-      return { authenticated: false, user: null };
-    }
-    
-    return { authenticated: true, user };
-  } catch (error) {
-    console.error('[AUTH ERROR]:', error);
-    return { authenticated: false, user: null };
-  }
-}
+import { 
+  authenticateAdmin, 
+  checkRateLimit, 
+  getClientIp, 
+  sanitizeString,
+  isValidUUID
+} from '@/lib/apiAuth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Method validation
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
+  const startTime = Date.now();
+
   try {
     // Rate limiting
-    const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || 
-               req.socket.remoteAddress || 
-               'unknown';
-    
-    if (!checkRateLimit(ip)) {
+    const ip = getClientIp(req);
+    if (!checkRateLimit(ip, 20, 60000)) {
       console.warn(`[UPDATE] Rate limit exceeded for IP: ${ip}`);
       return res.status(429).json({ 
         message: 'Too many requests. Please try again later.' 
       });
     }
 
-    // Authentication check
-    const { authenticated, user } = await authenticateRequest(req);
+    // Authentication & Authorization
+    const { authenticated, user, isAdmin } = await authenticateAdmin(req);
     
     if (!authenticated || !user) {
-      console.warn('[UPDATE] Unauthorized access attempt');
+      console.warn('[UPDATE] Unauthorized access attempt from IP:', ip);
       return res.status(401).json({ 
         message: 'Unauthorized. Please log in.' 
       });
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !serviceKey) {
-      console.error('[UPDATE] Missing Supabase configuration');
-      return res.status(500).json({ 
-        message: 'Server configuration error.' 
-      });
-    }
-
-    const supabaseAdmin = createClient(supabaseUrl, serviceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    });
-
-    // Verify user is admin
-    const { data: profile } = await supabaseAdmin
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-
-    if (!profile || profile.role !== 'Admin') {
+    if (!isAdmin) {
       console.warn(`[UPDATE] Non-admin user ${user.id} attempted to update user`);
       return res.status(403).json({ 
         message: 'Forbidden. Admin access required.' 
       });
     }
 
-    // Input validation and sanitization
+    // Input validation
     const { userId, newRole, newName } = req.body;
 
-    if (!userId || typeof userId !== 'string') {
-      return res.status(400).json({ 
-        message: 'Invalid user ID provided.' 
-      });
+    if (!userId || typeof userId !== 'string' || !isValidUUID(userId)) {
+      return res.status(400).json({ message: 'Invalid user ID provided.' });
     }
 
     if (!newRole && !newName) {
@@ -136,14 +57,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Validate role
-    const validRoles = ['Admin', 'Author', 'Viewer'];
+   const validRoles = ['Admin', 'Author', 'Viewer'];
     if (newRole && !validRoles.includes(newRole)) {
       return res.status(400).json({ 
-        message: 'Invalid role. Must be Admin, Author, or Viewer.' 
+        message: `Invalid role. Must be one of: ${validRoles.join(', ')}` 
       });
     }
 
     // Validate and sanitize name
+    let sanitizedName: string | undefined;
     if (newName) {
       if (typeof newName !== 'string' || newName.trim().length === 0) {
         return res.status(400).json({ 
@@ -151,25 +73,67 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       }
       
-      if (newName.length > 100) {
+      sanitizedName = sanitizeString(newName);
+      
+      if (sanitizedName.length < 2) {
         return res.status(400).json({ 
-          message: 'Name is too long (max 100 characters).' 
+          message: 'Name must be at least 2 characters.' 
         });
       }
     }
 
+    // Initialize admin client
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+    const supabaseAdmin = createClient(supabaseUrl, serviceKey, {
+      auth: { autoRefreshToken: false, persistSession: false }
+    });
+
     console.log(`[UPDATE] Admin ${user.email} updating user ${userId}`);
 
-    // Build update object with sanitized data
+    // Build update object
     const updateData: any = {};
-    if (newName !== undefined && newName !== null) {
-      updateData.name = sanitizeString(newName);
-    }
-    if (newRole !== undefined && newRole !== null) {
-      updateData.role = newRole;
+    if (sanitizedName) updateData.name = sanitizedName;
+    if (newRole) updateData.role = newRole;
+
+    // Check if profile exists
+    const { data: existingProfile } = await supabaseAdmin
+      .from('profiles')
+      .select('id, name, role')
+      .eq('id', userId)
+      .single();
+
+    if (!existingProfile) {
+      // Create new profile
+      const { error: insertError } = await supabaseAdmin
+        .from('profiles')
+        .insert({
+          id: userId,
+          name: sanitizedName || 'User',
+          role: newRole || 'Author',
+          created_at: new Date().toISOString()
+        });
+
+      if (insertError) {
+        console.error('[UPDATE] Profile creation error:', insertError);
+        return res.status(500).json({ 
+          message: `Profile creation failed: ${insertError.message}` 
+        });
+      }
+
+      console.log(`[UPDATE SUCCESS] Profile created for user ${userId}`);
+      
+      const duration = Date.now() - startTime;
+      return res.status(200).json({ 
+        message: 'User profile created successfully.',
+        created: true,
+        success: true,
+        duration: `${duration}ms`
+      });
     }
 
-    // Update the profile
+    // Update existing profile
     const { data, error } = await supabaseAdmin
       .from('profiles')
       .update(updateData)
@@ -183,39 +147,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // If no profile exists, create one
-    if (!data || data.length === 0) {
-      console.log(`[UPDATE] Creating profile for user ${userId}`);
-      
-      const { error: insertError } = await supabaseAdmin
-        .from('profiles')
-        .insert({
-          id: userId,
-          name: newName ? sanitizeString(newName) : 'User',
-          role: newRole || 'Author'
-        });
-
-      if (insertError) {
-        console.error('[UPDATE] Profile creation error:', insertError);
-        return res.status(500).json({ 
-          message: `Profile creation failed: ${insertError.message}` 
-        });
-      }
-
-      console.log(`[UPDATE SUCCESS] Profile created for user ${userId}`);
-      return res.status(200).json({ 
-        message: 'User profile created successfully.',
-        created: true,
-        success: true
-      });
-    }
-
-    console.log(`[UPDATE SUCCESS] User ${userId} updated by admin ${user.email}`);
+    const duration = Date.now() - startTime;
+    console.log(`[UPDATE SUCCESS] User ${userId} updated in ${duration}ms`);
     
     return res.status(200).json({ 
       message: 'User updated successfully.',
       data: data[0],
-      success: true
+      success: true,
+      duration: `${duration}ms`
     });
 
   } catch (err: any) {

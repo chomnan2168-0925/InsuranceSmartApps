@@ -1,10 +1,97 @@
-# Block all crawlers from the admin areas
+# robots.txt for www.insurancesmartcalculator.com
+# Last updated: 2025-10-25
+# Contact: webmaster@insurancesmartcalculator.com
+# ✅ CANONICAL DOMAIN: www.insurancesmartcalculator.com
+
+# ==============================================
+# Default crawl rules for all bots
+# ==============================================
 User-agent: *
+
+# Block admin and internal areas
 Disallow: /admin0925/
 Disallow: /dev-admin0925/
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+Disallow: /reports/
 
-# Allow all crawlers to access the rest of the site
+# Block URL parameters that create duplicate content
+Disallow: /*?sort=*
+Disallow: /*?filter=*
+Disallow: /*?page=*
+
+# Allow important pages explicitly
 Allow: /
+Allow: /calculators
+Allow: /calculators/
+Allow: /insurance-tips
+Allow: /insurance-tips/
+Allow: /newsroom
+Allow: /newsroom/
+Allow: /tags/
+Allow: /about-us
+Allow: /ask-an-expert
+Allow: /sitemap
 
-# Provide the location of the sitemap
+# Allow static assets
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.webp$
+Allow: /*.svg$
+Allow: /*.woff$
+Allow: /*.woff2$
+
+# Crawl delay for aggressive bots (helps prevent server overload)
+Crawl-delay: 1
+
+# ==============================================
+# Specific rules for major search engines
+# ==============================================
+
+# Google (no special restrictions)
+User-agent: Googlebot
+Allow: /
+Disallow: /admin0925/
+Disallow: /dev-admin0925/
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+
+# Google Images
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /assets/
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /admin0925/
+Disallow: /dev-admin0925/
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+
+# ==============================================
+# Polite crawl delay for SEO tool bots
+# ==============================================
+User-agent: SemrushBot
+Crawl-delay: 5
+
+User-agent: AhrefsBot
+Crawl-delay: 5
+
+User-agent: DotBot
+Crawl-delay: 5
+
+# ==============================================
+# Sitemap locations (✅ USING CANONICAL WWW DOMAIN)
+# ==============================================
 Sitemap: https://www.insurancesmartcalculator.com/sitemap.xml
+Sitemap: https://www.insurancesmartcalculator.com/sitemap-static.xml
+Sitemap: https://www.insurancesmartcalculator.com/sitemap-calculators.xml
+Sitemap: https://www.insurancesmartcalculator.com/sitemap-articles.xml
+Sitemap: https://www.insurancesmartcalculator.com/sitemap-tags.xml

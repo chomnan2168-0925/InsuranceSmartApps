@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import Head from 'next/head';
 import { CalculatorResult } from '@/context/CalculatorContext';
 import { generateSocialShareData, getOGImageUrl } from '@/lib/socialShare';
+import siteConfig from '@/config/siteConfig.json';
 
 interface ShareMetaTagsProps {
   result?: CalculatorResult | null;
@@ -53,7 +54,7 @@ const ShareMetaTags: React.FC<ShareMetaTagsProps> = ({
       return {
         title: pageTitle,
         description: pageDescription,
-        image: '/images/og-default.jpg'
+image: siteConfig.defaultImage
       };
     }
 

@@ -19,28 +19,49 @@ const TipsPage: React.FC<TipsPageProps> = (props) => {
   return (
     <CategoryPageTemplate
       categoryName="Insurance Tips"
-      categoryDescription="Practical advice and strategies to help you manage your money and build wealth."
+      categoryDescription="Get practical insurance advice and proven money management strategies. Learn how to save on premiums, maximize coverage, and build long-term financial wealth with expert tips."
       {...props}
     />
   );
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  // Fetch all published posts with author information
-  const { data: allPublishedPosts, error } = await supabase
+  // ✅ OPTIMIZED: Fetch only Insurance Tips posts with minimal fields for listing
+  const { data: tipsPosts, error: tipsError } = await supabase
     .from('articles')
     .select(`
-      *,
-      profiles:author_id (
+      id,
+      slug,
+      title,
+      excerpt,
+      imageUrl,
+      category,
+      created_at,
+      published_date,
+      label,
+      tags,
+      author:profiles!author_id (
         id,
-        name
+        name,
+        avatar_url
       )
     `)
+    .eq('category', 'Insurance Tips')
     .eq('status', 'Published')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50); // Limit initial fetch to reasonable amount
 
-  if (error || !allPublishedPosts) {
-    console.error('Error fetching articles:', error);
+  // ✅ OPTIMIZED: Fetch only Newsroom posts for sidebar (minimal fields)
+  const { data: newsroomPosts, error: newsError } = await supabase
+    .from('articles')
+    .select('id, slug, title, excerpt, imageUrl, category, created_at, published_date')
+    .eq('category', 'Insurance Newsroom')
+    .eq('status', 'Published')
+    .order('created_at', { ascending: false })
+    .limit(3);
+
+  if (tipsError || !tipsPosts) {
+    console.error('Error fetching articles:', tipsError);
     return { 
       props: { 
         posts: [], 
@@ -50,31 +71,20 @@ export const getStaticProps: GetStaticProps = async () => {
         sidebarTopTips: [], 
         sidebarTopNews: [] 
       },
-      revalidate: 60
+      revalidate: 600
     };
   }
 
-  // Transform author data for all posts
-  const transformedPosts = allPublishedPosts.map(post => {
-    if (post.profiles) {
-      return {
-        ...post,
-        author: {
-          name: post.profiles.name,
-          avatarUrl: '/images/default-avatar.png', // TODO: Add avatar field to profiles table
-        },
-        date: post.published_date || post.created_at, // Backwards compatibility
-      };
-    }
-    return {
-      ...post,
-      date: post.published_date || post.created_at,
-    };
-  });
-  
-  // Filter by category
-  const allTipsPosts = transformedPosts.filter(p => p.category === 'Insurance Tips');
-  const allNewsroomPosts = transformedPosts.filter(p => p.category === 'Insurance Newsroom');
+  // Transform posts
+  const transformedPosts = tipsPosts.map(post => ({
+    ...post,
+    date: post.published_date || post.created_at,
+  }));
+
+  const transformedNews = (newsroomPosts || []).map(post => ({
+    ...post,
+    date: post.published_date || post.created_at,
+  }));
   
   // Get total count for pagination
   const { count: totalTipsCount } = await supabase
@@ -86,10 +96,9 @@ export const getStaticProps: GetStaticProps = async () => {
   const totalPages = Math.ceil((totalTipsCount || 0) / POSTS_PER_PAGE);
 
   // Build props
-  const pinnedPosts = allTipsPosts.filter(p => p.label === 'Most Read' || p.label === 'Sponsored');
-  const paginatedPosts = allTipsPosts.slice(0, POSTS_PER_PAGE);
-  const sidebarTopTips = allTipsPosts.slice(0, 3);
-  const sidebarTopNews = allNewsroomPosts.slice(0, 3);
+  const pinnedPosts = transformedPosts.filter(p => p.label === 'Most Read' || p.label === 'Sponsored');
+  const paginatedPosts = transformedPosts.slice(0, POSTS_PER_PAGE);
+  const sidebarTopTips = transformedPosts.slice(0, 3);
 
   return {
     props: {
@@ -98,9 +107,9 @@ export const getStaticProps: GetStaticProps = async () => {
       currentPage: 1,
       totalPages,
       sidebarTopTips,
-      sidebarTopNews,
+      sidebarTopNews: transformedNews,
     },
-    revalidate: 600, // Re-generate every 10 minutes
+    revalidate: 600,
   };
 };
 

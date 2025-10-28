@@ -1,4 +1,5 @@
 // /pages/sitemap.tsx
+// ✅ AI-OPTIMIZED VERSION - Keyword stuffing removed, structured data enhanced
 import React from 'react';
 import Link from 'next/link';
 import SEO from '@/components/layout/SEO';
@@ -9,12 +10,12 @@ const SitemapPage = () => {
       title: 'Insurance Calculators',
       icon: '💡',
       links: [
-        { name: 'Auto Insurance Calculator', href: '/calculators', description: 'Calculate your car insurance premium' },
-        { name: 'Home Insurance Calculator', href: '/calculators', description: 'Estimate homeowners insurance costs' },
-        { name: 'Life Insurance Calculator', href: '/calculators', description: 'Determine your life insurance needs' },
-        { name: 'Health Insurance Calculator', href: '/calculators', description: 'Compare health insurance plans' },
-        { name: 'Disability Insurance Calculator', href: '/calculators', description: 'Calculate disability coverage' },
-        { name: 'Pet Insurance Calculator', href: '/calculators', description: 'Estimate pet insurance costs' }
+        { name: 'Auto Insurance Calculator', href: '/calculators/auto-insurance', description: 'Calculate your car insurance premium' },
+        { name: 'Home Insurance Calculator', href: '/calculators/home-insurance', description: 'Estimate homeowners insurance costs' },
+        { name: 'Life Insurance Calculator', href: '/calculators/life-insurance', description: 'Determine your life insurance needs' },
+        { name: 'Health Insurance Calculator', href: '/calculators/health-insurance', description: 'Compare health insurance plans' },
+        { name: 'Disability Insurance Calculator', href: '/calculators/disability-insurance', description: 'Calculate disability coverage' },
+        { name: 'Pet Insurance Calculator', href: '/calculators/pet-insurance', description: 'Estimate pet insurance costs' }
       ]
     },
     {
@@ -40,11 +41,40 @@ const SitemapPage = () => {
     }
   ];
 
+  // ✅ AI-OPTIMIZED FAQ DATA - Natural language, direct answers
+  const faqData = [
+    {
+      question: "What insurance calculators do you offer?",
+      answer: "We provide free calculators for auto, home, life, health, disability, and pet insurance. Each calculator helps you estimate premiums and compare coverage options based on your specific needs."
+    },
+    {
+      question: "How do insurance calculators work?",
+      answer: "Our calculators use industry-standard formulas and current market data to provide estimates. You input your information (age, location, coverage needs), and the calculator generates personalized premium estimates."
+    },
+    {
+      question: "Are these calculators really free to use?",
+      answer: "Yes, all our insurance calculators are completely free with no hidden fees. You can use them as many times as needed to compare different scenarios and coverage options."
+    },
+    {
+      question: "Do I need to create an account?",
+      answer: "No account is required. You can access and use all calculators immediately without registration or providing personal contact information."
+    },
+    {
+      question: "How accurate are the insurance estimates?",
+      answer: "Our calculators provide estimates based on typical market rates and industry data. Actual quotes from insurance providers may vary based on their specific underwriting criteria and available discounts."
+    }
+  ];
+
   return (
     <div>
       <SEO
-        title="Sitemap | Free Insurance Calculators & Rate Comparison Tools | Insurance SmartApps"
-        description="Complete directory of free insurance calculators for auto, home, life, health, disability, and pet insurance. Compare rates, estimate premiums, calculate coverage needs, and find the best insurance policies with our unbiased calculator tools and expert financial guidance."
+        title="Site Map - Free Insurance Calculators & Tools"
+        description="Complete directory of free insurance calculators for auto, home, life, health, disability, and pet insurance. Find tools, guides, and resources to help you make informed insurance decisions."
+        faqs={faqData}
+        breadcrumbs={[
+          { name: 'Home', url: 'https://www.insurancesmartcalculator.com' },
+          { name: 'Sitemap', url: 'https://www.insurancesmartcalculator.com/sitemap' }
+        ]}
       />
       
       <div className="container mx-auto px-4 py-4 md:py-8 max-w-6xl">
@@ -55,9 +85,11 @@ const SitemapPage = () => {
                 🗺️
               </div>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-navy-blue mb-3">Site Map - Insurance Calculator Tools & Resources</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-navy-blue mb-3">
+              Site Map
+            </h1>
             <p className="text-base md:text-lg text-gray-600">
-              Navigate through all free insurance calculators, premium estimators, coverage comparison tools, and educational resources. Find insurance quotes, compare rates, calculate your insurance needs, and get expert financial guidance.
+              Navigate through our free insurance calculators, educational resources, and expert guidance tools.
             </p>
           </div>
         </div>
@@ -104,6 +136,22 @@ const SitemapPage = () => {
           })}
         </div>
 
+        {/* ✅ FAQ Section - Visible to users AND AI crawlers */}
+        <div className="mt-8 bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+          <h2 className="text-2xl font-bold text-navy-blue mb-4 flex items-center gap-2">
+            <span className="text-3xl">❓</span>
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-4">
+            {faqData.map((faq, index) => (
+              <div key={index} className="border-b border-gray-200 pb-4 last:border-b-0">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">{faq.question}</h3>
+                <p className="text-gray-600">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
           <div className="flex items-start gap-3">
             <svg className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -111,7 +159,11 @@ const SitemapPage = () => {
             </svg>
             <div>
               <p className="text-sm text-gray-700">
-                <strong>Looking for something specific?</strong> Use our insurance calculators to compare rates and coverage options, or <Link href="/ask-an-expert" className="text-blue-600 hover:text-blue-800 underline">ask our experts</Link> for personalized financial guidance and insurance recommendations.
+                <strong>Need personalized help?</strong> Use our calculators to get instant estimates, or{' '}
+                <Link href="/ask-an-expert" className="text-blue-600 hover:text-blue-800 underline">
+                  ask our experts
+                </Link>{' '}
+                for guidance tailored to your situation.
               </p>
             </div>
           </div>
@@ -126,140 +178,129 @@ const SitemapPage = () => {
           </Link>
         </div>
 
-        {/* SEO Content - Hidden but crawlable */}
-        <div className="sr-only">
-          <h2>Free Insurance Calculator Tools and Premium Estimators</h2>
-          <p>
-            Insurance SmartApps provides comprehensive free insurance calculator tools for auto insurance quotes, 
-            car insurance premium estimates, home insurance cost calculator, homeowners insurance estimator, 
-            life insurance needs analysis, term life insurance calculator, whole life insurance calculator, 
-            health insurance comparison tool, health insurance premium calculator, disability income protection calculator, 
-            disability insurance coverage estimator, and pet insurance cost calculator.
-          </p>
-          <p>
-            Our unbiased insurance calculators help you compare insurance rates, understand coverage options, 
-            estimate monthly premiums, calculate deductibles, analyze insurance costs, find the best insurance policies, 
-            and make informed decisions about your financial protection needs. Use our insurance comparison tools to 
-            get instant quotes, compare multiple insurance providers, and find affordable coverage that fits your budget.
-          </p>
-          <h3>Insurance Calculator Keywords and Tools</h3>
-          <p>
-            Auto insurance calculator, car insurance estimator, vehicle insurance quote tool, auto premium calculator, 
-            homeowners insurance calculator, home insurance cost estimator, property insurance calculator, 
-            life insurance needs calculator, life coverage estimator, term life calculator, permanent life insurance tool, 
-            health insurance comparison calculator, medical insurance premium estimator, health plan comparison tool, 
-            disability insurance calculator, income protection calculator, disability coverage estimator, 
-            pet insurance calculator, pet coverage cost estimator, veterinary insurance calculator.
-          </p>
-          <h3>Insurance Planning and Comparison Resources</h3>
-          <p>
-            Insurance comparison tool, rate comparison calculator, premium estimator, coverage calculator, 
-            insurance cost estimator, quote comparison tool, policy comparison calculator, insurance planning tools, 
-            financial protection calculator, risk assessment tools, insurance needs analysis, coverage gap analysis, 
-            deductible calculator, liability coverage calculator, comprehensive coverage estimator, collision coverage tool, 
-            umbrella insurance calculator, supplemental insurance estimator, insurance bundle savings calculator.
-          </p>
-          <h3>Expert Insurance Guidance and Educational Resources</h3>
-          <p>
-            Free insurance advice, expert insurance guidance, insurance planning help, coverage recommendations, 
-            insurance tips and guides, insurance education, policy selection guide, insurance buying guide, 
-            coverage optimization, insurance savings tips, discount finder, insurance budget planner, 
-            financial protection planning, risk management tools, insurance decision support, unbiased insurance information.
-          </p>
-        </div>
+        {/* ✅ REMOVED: Hidden keyword-stuffed content */}
+        {/* SEO is now handled by proper structured data above */}
 
-        {/* Schema.org Structured Data for SEO */}
+        {/* ✅ Enhanced Schema.org - AI-optimized */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": "Insurance SmartApps",
-              "url": "https://InsuranceSmartCalculator.com",
-              "description": "Free insurance calculators and premium estimators for auto, home, life, health, disability, and pet insurance",
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": {
-                  "@type": "EntryPoint",
-                  "urlTemplate": "https://InsuranceSmartCalculator.com/sitemap?q={search_term_string}"
-                },
-                "query-input": "required name=search_term_string"
+              "@type": "CollectionPage",
+              "name": "Insurance Calculator Sitemap",
+              "url": "https://www.insurancesmartcalculator.com/sitemap",
+              "description": "Complete directory of free insurance calculators and resources",
+              "inLanguage": "en-US",
+              "isPartOf": {
+                "@type": "WebSite",
+                "name": "Insurance SmartCalculator",
+                "url": "https://www.insurancesmartcalculator.com"
               },
               "mainEntity": {
                 "@type": "ItemList",
                 "name": "Insurance Calculator Tools",
-                "description": "Comprehensive suite of free insurance calculators and premium estimators",
+                "description": "Free online calculators for estimating insurance premiums and coverage needs",
+                "numberOfItems": 6,
                 "itemListElement": [
                   {
                     "@type": "ListItem",
                     "position": 1,
-                    "name": "Auto Insurance Calculator",
-                    "description": "Calculate car insurance premiums and compare auto insurance rates",
-                    "url": "https://InsuranceSmartCalculator.com/calculators"
+                    "item": {
+                      "@type": "SoftwareApplication",
+                      "name": "Auto Insurance Calculator",
+                      "description": "Calculate estimated car insurance premiums based on vehicle type, driver profile, and coverage needs",
+                      "url": "https://www.insurancesmartcalculator.com/calculators/auto-insurance",
+                      "applicationCategory": "FinanceApplication",
+                      "offers": {
+                        "@type": "Offer",
+                        "price": "0",
+                        "priceCurrency": "USD"
+                      }
+                    }
                   },
                   {
                     "@type": "ListItem",
                     "position": 2,
-                    "name": "Home Insurance Calculator",
-                    "description": "Estimate homeowners insurance costs and coverage needs",
-                    "url": "https://InsuranceSmartCalculator.com/calculators"
+                    "item": {
+                      "@type": "SoftwareApplication",
+                      "name": "Home Insurance Calculator",
+                      "description": "Estimate homeowners insurance costs based on property value, location, and coverage options",
+                      "url": "https://www.insurancesmartcalculator.com/calculators/home-insurance",
+                      "applicationCategory": "FinanceApplication",
+                      "offers": {
+                        "@type": "Offer",
+                        "price": "0",
+                        "priceCurrency": "USD"
+                      }
+                    }
                   },
                   {
                     "@type": "ListItem",
                     "position": 3,
-                    "name": "Life Insurance Calculator",
-                    "description": "Determine life insurance coverage needs and compare term vs whole life",
-                    "url": "https://InsuranceSmartCalculator.com/calculators"
+                    "item": {
+                      "@type": "SoftwareApplication",
+                      "name": "Life Insurance Calculator",
+                      "description": "Determine appropriate life insurance coverage based on income, dependents, and financial obligations",
+                      "url": "https://www.insurancesmartcalculator.com/calculators/life-insurance",
+                      "applicationCategory": "FinanceApplication",
+                      "offers": {
+                        "@type": "Offer",
+                        "price": "0",
+                        "priceCurrency": "USD"
+                      }
+                    }
                   },
                   {
                     "@type": "ListItem",
                     "position": 4,
-                    "name": "Health Insurance Calculator",
-                    "description": "Compare health insurance plans and estimate premium costs",
-                    "url": "https://InsuranceSmartCalculator.com/calculators"
+                    "item": {
+                      "@type": "SoftwareApplication",
+                      "name": "Health Insurance Calculator",
+                      "description": "Compare health insurance plans and estimate premium costs based on coverage needs",
+                      "url": "https://www.insurancesmartcalculator.com/calculators/health-insurance",
+                      "applicationCategory": "FinanceApplication",
+                      "offers": {
+                        "@type": "Offer",
+                        "price": "0",
+                        "priceCurrency": "USD"
+                      }
+                    }
                   },
                   {
                     "@type": "ListItem",
                     "position": 5,
-                    "name": "Disability Insurance Calculator",
-                    "description": "Calculate disability income protection and coverage amounts",
-                    "url": "https://InsuranceSmartCalculator.com/calculators"
+                    "item": {
+                      "@type": "SoftwareApplication",
+                      "name": "Disability Insurance Calculator",
+                      "description": "Calculate recommended disability insurance coverage based on income and expenses",
+                      "url": "https://www.insurancesmartcalculator.com/calculators/disability-insurance",
+                      "applicationCategory": "FinanceApplication",
+                      "offers": {
+                        "@type": "Offer",
+                        "price": "0",
+                        "priceCurrency": "USD"
+                      }
+                    }
                   },
                   {
                     "@type": "ListItem",
                     "position": 6,
-                    "name": "Pet Insurance Calculator",
-                    "description": "Estimate pet insurance costs and veterinary coverage",
-                    "url": "https://InsuranceSmartCalculator.com/calculators"
+                    "item": {
+                      "@type": "SoftwareApplication",
+                      "name": "Pet Insurance Calculator",
+                      "description": "Estimate pet insurance costs based on pet type, age, and coverage options",
+                      "url": "https://www.insurancesmartcalculator.com/calculators/pet-insurance",
+                      "applicationCategory": "FinanceApplication",
+                      "offers": {
+                        "@type": "Offer",
+                        "price": "0",
+                        "priceCurrency": "USD"
+                      }
+                    }
                   }
                 ]
               }
-            })
-          }}
-        />
-
-        {/* Breadcrumb Schema */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              "itemListElement": [
-                {
-                  "@type": "ListItem",
-                  "position": 1,
-                  "name": "Home",
-                  "item": "https://insurancesmartapps.com"
-                },
-                {
-                  "@type": "ListItem",
-                  "position": 2,
-                  "name": "Sitemap",
-                  "item": "https://insurancesmartapps.com/sitemap"
-                }
-              ]
             })
           }}
         />

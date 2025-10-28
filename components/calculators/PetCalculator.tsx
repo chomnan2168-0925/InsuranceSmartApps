@@ -1,4 +1,5 @@
 // /components/calculators/PetCalculator.tsx
+// ✅ UPDATED: Added comprehensive SEO keywords section
 import React, { useState } from 'react';
 import { useCalculatorContext } from '@/context/CalculatorContext';
 
@@ -363,6 +364,21 @@ const PetCalculator: React.FC = () => {
           <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-xs text-blue-800">
               <strong>Note:</strong> This is an estimate. Actual premiums vary by location, specific plan details, and pet health history. Pre-existing conditions are typically not covered.
+            </p>
+          </div>
+
+          {/* ✅ ENHANCED SEO CONTENT - Optimized Length & Keyword Density */}
+          <div className="sr-only">
+            <h2>Pet Insurance Calculator - Comprehensive Coverage Estimator</h2>
+            <p>
+              Calculate accurate pet insurance premiums with our free dog insurance calculator and cat insurance cost estimator. 
+              Get breed-specific quotes for popular breeds including Labrador Retriever, Golden Retriever, German Shepherd, 
+              French Bulldog, Beagle, Maine Coon, Persian, and Siamese cats. Our veterinary insurance premium calculator helps 
+              you compare accident-only coverage, comprehensive illness protection, and wellness care plans. Estimate monthly costs 
+              based on your pet's age, breed health risks, deductible preferences ($100-$1000), reimbursement levels (70%-90%), 
+              and annual coverage limits ($5K-Unlimited). Calculate insurance for puppies, kittens, adult pets, and senior animals 
+              while understanding hereditary condition coverage, emergency vet visit protection, and preventive care benefits. 
+              Compare multi-pet discounts and find affordable pet health insurance tailored to your furry companion's specific needs.
             </p>
           </div>
         </div>

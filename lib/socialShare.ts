@@ -1,4 +1,5 @@
 import { CalculatorResult } from '@/context/CalculatorContext';
+import siteConfig from '@/config/siteConfig.json';
 
 export const generateSocialShareData = (result: CalculatorResult) => {
   const calculatorTitles: Record<string, string> = {
@@ -56,7 +57,7 @@ export const generateShareableURL = (result: CalculatorResult): string => {
 };
 
 export const getOGImageUrl = (result: CalculatorResult): string => {
-  if (typeof window === 'undefined') return '/images/og-default.jpg';
+  if (typeof window === 'undefined') return siteConfig.defaultImage;
   
   const params = new URLSearchParams();
   params.set('type', result.type);

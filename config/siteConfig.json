@@ -1,8 +1,55 @@
 {
   "siteName": "Insurance SmartApps",
-  "siteUrl": "https://www.InsuranceSmartCalculator.com",
-  "contactEmail": "contact@InsuranceSmartCalculator.com",
-  "copyright": "© 2026 Insurance SmartApps. All Rights Reserved.",
+  "siteUrl": "https://www.insurancesmartcalculator.com",
+  "contactEmail": "contact@insurancesmartcalculator.com",
+  "copyright": "© 2025 Insurance SmartApps. All Rights Reserved.",
+  
+  "siteDescription": "Free insurance calculators for auto, home, life, health, disability, and pet. Calculate premiums, compare rates, and make informed insurance decisions.",
+  "siteKeywords": "insurance calculator, auto insurance, home insurance, life insurance, health insurance, insurance comparison, premium calculator",
+  
+  "defaultImage": "/images/og-default.jpg",
+  "defaultOgImage": "https://www.insurancesmartcalculator.com/images/og-default.jpg",
+  "logoUrl": "https://www.insurancesmartcalculator.com/logo.png",
+  "homepageImage": "/images/og-default.jpg",
+  "homepageOgImage": "https://www.insurancesmartcalculator.com/images/og-default.jpg",
+  
+  "twitterHandle": "@insurancecalc",
+  "facebookAppId": "",
+  "googleAnalyticsId": "",
+  "googleSiteVerification": "",
+  
+  "locale": "en_US",
+  "language": "en",
+  "dateFormat": "MMMM DD, YYYY",
+  "currency": "USD",
+  "timezone": "America/New_York",
+  
+  "author": {
+    "name": "Insurance SmartApps Team",
+    "email": "webmaster@insurancesmartcalculator.com",
+    "url": "https://www.insurancesmartcalculator.com/about-us"
+  },
+  
+  "organization": {
+    "name": "Insurance SmartApps",
+    "legalName": "Insurance SmartApps LLC",
+    "url": "https://www.insurancesmartcalculator.com",
+    "logo": "https://www.insurancesmartcalculator.com/logo.png",
+    "description": "Providing free insurance calculators and expert guidance to help consumers make informed insurance decisions.",
+    "foundingDate": "2024",
+    "email": "contact@insurancesmartcalculator.com",
+    "contactPoint": {
+      "contactType": "Customer Service",
+      "email": "support@insurancesmartcalculator.com",
+      "availableLanguage": "English"
+    },
+    "sameAs": [
+      "https://facebook.com/insurancesmartapps",
+      "https://linkedin.com/company/insurancesmartapps",
+      "https://youtube.com/insurancesmartapps"
+    ]
+  },
+  
   "navLinks": [
     {
       "title": "Home",
@@ -25,20 +72,21 @@
       "icon": "/assets/icons/news.svg"
     },
     {
-      "title": "Our Story",
-      "href": "/our-story",
+      "title": "About Us",
+      "href": "/about-us",
       "icon": "/assets/icons/story.svg"
     },
     {
-      "title": "Ask an Expert",
+      "title": "Contact Us",
       "href": "/ask-an-expert",
       "icon": "/assets/icons/expert.svg"
     }
   ],
+  
   "footerLinks": [
     {
       "title": "Our Story",
-      "href": "/our-story",
+      "href": "/about-us",
       "icon": "/assets/icons/story.svg"
     },
     {
@@ -47,28 +95,30 @@
       "icon": "/assets/icons/news.svg"
     },
     {
-      "title": "Ask an Expert",
+      "title": "Contact Us",
       "href": "/ask-an-expert",
       "icon": "/assets/icons/expert.svg"
     }
   ],
+  
   "socialLinks": [
     {
       "name": "Facebook",
-      "url": "https://facebook.com/",
+      "url": "https://facebook.com/insurancesmartapps",
       "icon": "/assets/icons/facebook.svg"
     },
     {
       "name": "LinkedIn",
-      "url": "https://linkedin.com/",
+      "url": "https://linkedin.com/company/insurancesmartapps",
       "icon": "/assets/icons/linkedin.svg"
     },
     {
       "name": "YouTube",
-      "url": "https://youtube.com/",
+      "url": "https://youtube.com/insurancesmartapps",
       "icon": "/assets/icons/youtube.svg"
     }
   ],
+  
   "askAnExpertSubjects": [
     "Retirement Planning",
     "Investment Strategies",
@@ -76,5 +126,162 @@
     "Debt Management",
     "Tax Planning",
     "General Inquiry"
-  ]
+  ],
+  
+  "features": {
+    "enableAnalytics": true,
+    "enableSEO": true,
+    "enableSitemap": true,
+    "enableRobots": true,
+    "enableCanonicalUrls": true,
+    "enableStructuredData": true,
+    "enableBreadcrumbs": true,
+    "enableFAQSchema": true
+  },
+  
+  "seo": {
+    "titleTemplate": "%s | Insurance SmartApps",
+    "defaultTitle": "Free Insurance Calculators & Rate Comparison Tools",
+    "titleSeparator": "|",
+    "defaultDescription": "Calculate and compare insurance rates with our free calculators. Get instant quotes for auto, home, life, health, disability, and pet insurance.",
+    "robotsDefault": "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
+    "robotsNoIndex": "noindex, nofollow"
+  },
+  
+  "openGraph": {
+    "type": "website",
+    "locale": "en_US",
+    "siteName": "Insurance SmartApps",
+    "images": {
+      "default": "/images/og-default.jpg",
+      "width": 1200,
+      "height": 630
+    }
+  },
+  
+  "twitter": {
+    "handle": "@insurancecalc",
+    "site": "@insurancecalc",
+    "cardType": "summary_large_image"
+  },
+  
+  "pages": {
+    "calculators": {
+      "ogImage": "/images/og-calculators.jpg",
+      "ogImageFull": "https://www.insurancesmartcalculator.com/images/og-calculators.jpg"
+    }
+  },
+  
+  "calculators": [
+    {
+      "name": "Auto Insurance Calculator",
+      "slug": "auto-insurance",
+      "description": "Calculate your car insurance premium",
+      "icon": "/assets/icons/auto-insurance.svg",
+      "color": "#3B82F6",
+      "ogImage": "/images/og-auto-insurance.jpg",
+      "ogImageFull": "https://www.insurancesmartcalculator.com/images/og-auto-insurance.jpg"
+    },
+    {
+      "name": "Home Insurance Calculator",
+      "slug": "home-insurance",
+      "description": "Estimate homeowners insurance costs",
+      "icon": "/assets/icons/home-insurance.svg",
+      "color": "#10B981",
+      "ogImage": "/images/og-home-insurance.jpg",
+      "ogImageFull": "https://www.insurancesmartcalculator.com/images/og-home-insurance.jpg"
+    },
+    {
+      "name": "Life Insurance Calculator",
+      "slug": "life-insurance",
+      "description": "Determine your life insurance needs",
+      "icon": "/assets/icons/life-insurance.svg",
+      "color": "#8B5CF6",
+      "ogImage": "/images/og-life-insurance.jpg",
+      "ogImageFull": "https://www.insurancesmartcalculator.com/images/og-life-insurance.jpg"
+    },
+    {
+      "name": "Health Insurance Calculator",
+      "slug": "health-insurance",
+      "description": "Compare health insurance plans",
+      "icon": "/assets/icons/health-insurance.svg",
+      "color": "#EF4444",
+      "ogImage": "/images/og-health-insurance.jpg",
+      "ogImageFull": "https://www.insurancesmartcalculator.com/images/og-health-insurance.jpg"
+    },
+    {
+      "name": "Disability Insurance Calculator",
+      "slug": "disability-insurance",
+      "description": "Calculate disability coverage",
+      "icon": "/assets/icons/disability-insurance.svg",
+      "color": "#F59E0B",
+      "ogImage": "/images/og-disability-insurance.jpg",
+      "ogImageFull": "https://www.insurancesmartcalculator.com/images/og-disability-insurance.jpg"
+    },
+    {
+      "name": "Pet Insurance Calculator",
+      "slug": "pet-insurance",
+      "description": "Estimate pet insurance costs",
+      "icon": "/assets/icons/pet-insurance.svg",
+      "color": "#EC4899",
+      "ogImage": "/images/og-pet-insurance.jpg",
+      "ogImageFull": "https://www.insurancesmartcalculator.com/images/og-pet-insurance.jpg"
+    }
+  ],
+  
+  "articleCategories": [
+    {
+      "name": "Insurance Tips",
+      "slug": "insurance-tips",
+      "description": "Expert tips and guides for understanding insurance",
+      "color": "#3B82F6"
+    },
+    {
+      "name": "Newsroom",
+      "slug": "newsroom",
+      "description": "Latest insurance news and industry updates",
+      "color": "#10B981"
+    }
+  ],
+  
+  "legalPages": [
+    {
+      "title": "Privacy Policy",
+      "href": "/privacy-policy"
+    },
+    {
+      "title": "Terms of Use",
+      "href": "/terms-of-use"
+    },
+    {
+      "title": "Cookie Policy",
+      "href": "/cookie-policy"
+    }
+  ],
+  
+  "contact": {
+    "email": "contact@insurancesmartcalculator.com",
+    "supportEmail": "support@insurancesmartcalculator.com",
+    "businessEmail": "business@insurancesmartcalculator.com",
+    "phone": "",
+    "address": {
+      "street": "",
+      "city": "",
+      "state": "",
+      "zip": "",
+      "country": "United States"
+    }
+  },
+  
+  "maintenance": {
+    "enabled": false,
+    "message": "We're currently performing scheduled maintenance. We'll be back shortly!",
+    "allowedIPs": []
+  },
+  
+  "rateLimit": {
+    "enabled": true,
+    "maxRequests": 100,
+    "windowMs": 900000
+  }
 }

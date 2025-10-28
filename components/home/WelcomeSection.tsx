@@ -2,7 +2,7 @@
 import React from 'react';
 
 const WelcomeSection = () => (
-  <section className="text-center bg-white p-6 md:p-8 rounded-lg shadow-md">
+  <section className="text-center bg-white mt-1 p-4 md:p-8 rounded-lg shadow-md">
     
     {/* --- SECTION 1: VISIBLE HEADER (FOR YOUR VISITORS) --- */}
     {/* This is the content your users will see. You can easily edit this text to whatever you feel is best. */}
@@ -12,7 +12,7 @@ const WelcomeSection = () => (
       
       {/* Line 1: The Main Brand Name */}
       <span>
-        Insurance Smart Advisor
+        Insurance Smart Apps
       </span>
       
       {/* Line 2: The Features - smaller and less bold */}

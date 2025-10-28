@@ -19,14 +19,13 @@ const TipsPaginatedPage: React.FC<TipsPageProps> = (props) => {
   return (
     <CategoryPageTemplate
       categoryName="Insurance Tips"
-      categoryDescription="Practical advice and strategies to help you manage your money and build wealth."
+      categoryDescription="Step-by-step guides to simplify insurance decisions. Learn proven ways to compare policies, lower premiums, appeal denials, and choose coverage with confidence."
       {...props}
     />
   );
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  // Get the total count of Insurance Tips posts
   const { count } = await supabase
     .from('articles')
     .select('id', { count: 'exact', head: true })
@@ -35,7 +34,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   const totalPages = Math.ceil((count || 0) / POSTS_PER_PAGE);
 
-  // Generate paths for page 2, 3, etc. (page 1 is /insurance-tips)
   const paths = Array.from({ length: totalPages > 1 ? totalPages - 1 : 0 }, (_, i) => ({
     params: { page: (i + 2).toString() },
   }));
@@ -51,14 +49,24 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const startIndex = (page - 1) * POSTS_PER_PAGE;
   const endIndex = startIndex + POSTS_PER_PAGE - 1;
   
-  // Fetch paginated posts with author information
+  // ✅ OPTIMIZED: Fetch only necessary fields for listing (no full content)
   const { data: paginatedPosts, error: postsError } = await supabase
     .from('articles')
     .select(`
-      *,
-      profiles:author_id (
+      id,
+      slug,
+      title,
+      excerpt,
+      imageUrl,
+      category,
+      created_at,
+      published_date,
+      label,
+      tags,
+      author:profiles!author_id (
         id,
-        name
+        name,
+        avatar_url
       )
     `)
     .eq('category', 'Insurance Tips')
@@ -70,25 +78,13 @@ export const getStaticProps: GetStaticProps = async (context) => {
     console.error('Error fetching paginated posts:', postsError);
   }
 
-  // Transform author data
-  const transformedPosts = (paginatedPosts || []).map(post => {
-    if (post.profiles) {
-      return {
-        ...post,
-        author: {
-          name: post.profiles.name,
-          avatarUrl: '/images/default-avatar.png',
-        },
-        date: post.published_date || post.created_at,
-      };
-    }
-    return {
-      ...post,
-      date: post.published_date || post.created_at,
-    };
-  });
+  // Transform posts
+  const transformedPosts = (paginatedPosts || []).map(post => ({
+    ...post,
+    date: post.published_date || post.created_at,
+  }));
 
-  // Fetch sidebar articles
+  // ✅ OPTIMIZED: Fetch sidebar articles with minimal fields
   const { data: sidebarTips } = await supabase
     .from('articles')
     .select('id, slug, title, excerpt, imageUrl, category, created_at, published_date')
@@ -114,10 +110,10 @@ export const getStaticProps: GetStaticProps = async (context) => {
     
   const totalPages = Math.ceil((count || 0) / POSTS_PER_PAGE);
   
-  // Pinned posts (optional - can be based on label)
+  // Pinned posts (only on page 1, but keeping logic for consistency)
   const pinnedPosts = transformedPosts.filter(p => p.label === 'Most Read' || p.label === 'Sponsored');
   
-  // Transform dates for sidebar - handle null values
+  // Transform dates for sidebar
   const transformDates = (articles: any[] | null) => 
     (articles || []).map(a => ({ ...a, date: a.published_date || a.created_at }));
 

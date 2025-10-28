@@ -39,7 +39,8 @@ GenericStaticPage.getLayout = function getLayout(page: React.ReactElement) {
 export const getStaticPaths: GetStaticPaths = async () => {
   // List of slugs that have dedicated page files and should NOT be handled by [slug].tsx
   const excludedSlugs = [
-    'advertise',  // Has /pages/advertise.tsx with form + chart
+    'advertise',      // Has /pages/advertise.tsx with form + chart
+    'ask-an-expert',  // Has /pages/ask-an-expert.tsx with contact form
     // Add other dedicated pages here if needed:
     // 'contact',
     // 'special-landing-page',
