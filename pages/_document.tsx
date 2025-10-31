@@ -48,7 +48,15 @@ export default function Document() {
         <link rel="apple-touch-icon" href="/logo.png" />
         
         {/* Web App Manifest for PWA support */}
-        <link rel="manifest" href="/site.webmanifest" />
+<link rel="manifest" href="/site.webmanifest" />
+
+{/* Browser Config for Windows Tiles */}
+<meta name="msapplication-config" content="/browserconfig.xml" />
+
+{/* iOS Web App Support */}
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="InsuranceCalc" />
         
         {/* ============================================
             MOBILE & BROWSER THEMING

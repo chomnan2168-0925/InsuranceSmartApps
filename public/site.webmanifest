@@ -1,0 +1,64 @@
+{
+  "name": "Insurance SmartApps - Free Insurance Calculators",
+  "short_name": "InsuranceCalc",
+  "description": "Free insurance calculators for auto, home, life, health, disability, and pet insurance. Compare rates and get instant quotes.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-US",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "250x60",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": [
+    "finance",
+    "business",
+    "utilities",
+    "productivity"
+  ],
+  "shortcuts": [
+    {
+      "name": "Auto Insurance",
+      "short_name": "Auto",
+      "description": "Calculate auto insurance costs",
+      "url": "/calculators/auto-insurance",
+      "icons": [{"src": "/logo.png", "sizes": "250x60"}]
+    },
+    {
+      "name": "Home Insurance",
+      "short_name": "Home",
+      "description": "Calculate home insurance costs",
+      "url": "/calculators/home-insurance",
+      "icons": [{"src": "/logo.png", "sizes": "250x60"}]
+    },
+    {
+      "name": "Life Insurance",
+      "short_name": "Life",
+      "description": "Calculate life insurance needs",
+      "url": "/calculators/life-insurance",
+      "icons": [{"src": "/logo.png", "sizes": "250x60"}]
+    },
+    {
+      "name": "Pet Insurance",
+      "short_name": "Pet",
+      "description": "Calculate pet insurance costs",
+      "url": "/calculators/pet-insurance",
+      "icons": [{"src": "/logo.png", "sizes": "250x60"}]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
