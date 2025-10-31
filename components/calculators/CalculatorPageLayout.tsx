@@ -1,5 +1,6 @@
 // components/calculators/CalculatorPageLayout.tsx
-// ✅ FINAL VERSION - All schemas handled by SEO component ONLY
+// ✅ FIXED: Removed duplicate calculator schema creation that was causing "Unnamed item" errors
+// Now properly uses calculator prop from pages without creating defaults
 
 import React from 'react';
 import Head from 'next/head';
@@ -141,7 +142,7 @@ const FAQSection = ({ faqs }: { faqs?: FAQItem[] }) => {
   if (!faqs || faqs.length === 0) return null;
 
   return (
-    <div className="mt-8 bg-white p-6 rounded-xl shadow-lg border border-gray-100 faq-section">
+    <div className="mt-8 bg-white p-6 rounded-xl shadow-lg border border-gray-100">
       <h2 className="text-2xl font-bold text-navy-blue mb-6 flex items-center gap-2">
         <span className="text-3xl">❓</span>
         Frequently Asked Questions
@@ -186,14 +187,14 @@ const CalculatorPageLayout: React.FC<CalculatorPageLayoutProps> = ({
 
   const ogImageUrl = getCalculatorOGImage();
 
-  // Generate breadcrumbs for SEO component
+  // ✅ FIXED: Create proper breadcrumbs
   const breadcrumbs = [
     { name: 'Home', url: 'https://www.insurancesmartcalculator.com' },
     { name: 'Calculators', url: 'https://www.insurancesmartcalculator.com/calculators' },
     { name: displayTitle, url: `https://www.insurancesmartcalculator.com/calculators/${calculatorType}-insurance` }
   ];
 
-  // Create default FAQs if not provided
+  // ✅ FIXED: Create default FAQs if not provided
   const defaultFAQs: FAQItem[] = [
     {
       question: `How accurate is the ${calculatorType} insurance calculator?`,
@@ -209,24 +210,9 @@ const CalculatorPageLayout: React.FC<CalculatorPageLayoutProps> = ({
     }
   ];
 
-  // Create proper calculator schema with ALL required fields
-  const calculatorSchemaData: CalculatorSchema = {
-    name: calculator?.name || displayTitle,
-    description: calculator?.description || seoData.description,
-    featureList: calculator?.featureList || [
-      "Free instant calculations",
-      "No personal information required",
-      "Comprehensive needs analysis",
-      "Compare multiple quotes",
-      "Save and print results",
-      "Mobile-friendly interface"
-    ],
-    screenshot: calculator?.screenshot || `https://www.insurancesmartcalculator.com/images/og-${calculatorType}-insurance.jpg`,
-    ratingValue: calculator?.ratingValue || "4.8",
-    ratingCount: calculator?.ratingCount || "2847",
-    datePublished: calculator?.datePublished || "2024-01-01",
-    dateModified: calculator?.dateModified || new Date().toISOString().split('T')[0]
-  };
+  // ✅ CRITICAL FIX: Removed calculatorSchemaData creation - use prop directly
+  // This was causing duplicate SoftwareApplication schemas (the "Unnamed item" error)
+  // Now we ONLY use the calculator prop passed from each calculator page
 
   // Handle tab switching with navigation
   const handleTabSwitch = (newType: CalculatorInfo['id']) => {
@@ -235,7 +221,7 @@ const CalculatorPageLayout: React.FC<CalculatorPageLayoutProps> = ({
 
   return (
     <>
-      {/* ✅ ALL SCHEMAS HANDLED BY SEO COMPONENT ONLY */}
+      {/* ✅ FIXED: SEO component now handles ALL structured data */}
       <SEO
         title={seoData.title}
         description={seoData.description}
@@ -245,7 +231,7 @@ const CalculatorPageLayout: React.FC<CalculatorPageLayoutProps> = ({
         breadcrumbs={breadcrumbs}
         faqs={faqs || defaultFAQs}
         howTo={howTo}
-        calculator={calculatorSchemaData}
+        calculator={calculator}
         speakableSelectors={speakableSelectors || ['.calculator-content', '.faq-section']}
       />
       
@@ -336,7 +322,9 @@ const CalculatorPageLayout: React.FC<CalculatorPageLayoutProps> = ({
           <LatestResult />
 
           {/* FAQ Section (Visible to users AND AI) */}
-          <FAQSection faqs={faqs || defaultFAQs} />
+          <div className="faq-section">
+            <FAQSection faqs={faqs || defaultFAQs} />
+          </div>
 
           {/* Recommended Articles */}
           <RecommendedSlider articles={dontMissArticles} />
