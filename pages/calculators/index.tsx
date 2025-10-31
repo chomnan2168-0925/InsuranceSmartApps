@@ -26,7 +26,7 @@ const PetIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8
 const calculators = [
   {
     id: 'auto',
-    name: 'Auto Insurance Calculator',
+    title: 'Auto Insurance Calculator',
     description: 'Calculate car insurance premiums based on your vehicle, driving record, and coverage needs.',
     icon: <CarIcon />,
     link: '/calculators/auto-insurance',
@@ -37,7 +37,7 @@ const calculators = [
   },
   {
     id: 'home',
-    name: 'Homeowners Insurance Calculator',
+    title: 'Homeowners Insurance Calculator',
     description: 'Estimate homeowners insurance costs with replacement value and protective features.',
     icon: <HomeIcon />,
     link: '/calculators/home-insurance',
@@ -48,7 +48,7 @@ const calculators = [
   },
   {
     id: 'life',
-    name: 'Life Insurance Calculator',
+    title: 'Life Insurance Calculator',
     description: 'Determine how much life insurance you need using the comprehensive DIME+ method.',
     icon: <LifeIcon />,
     link: '/calculators/life-insurance',
@@ -59,7 +59,7 @@ const calculators = [
   },
   {
     id: 'health',
-    name: 'Health Insurance Calculator',
+    title: 'Health Insurance Calculator',
     description: 'Calculate ACA marketplace premiums and check subsidy eligibility instantly.',
     icon: <HealthIcon />,
     link: '/calculators/health-insurance',
@@ -70,7 +70,7 @@ const calculators = [
   },
   {
     id: 'disability',
-    name: 'Disability Insurance Calculator',
+    title: 'Disability Insurance Calculator',
     description: 'Calculate income protection needs and estimate disability insurance benefits.',
     icon: <DisabilityIcon />,
     link: '/calculators/disability-insurance',
@@ -81,7 +81,7 @@ const calculators = [
   },
   {
     id: 'pet',
-    name: 'Pet Insurance Calculator',
+    title: 'Pet Insurance Calculator',
     description: 'Get breed-specific pet insurance quotes for dogs and cats with wellness options.',
     icon: <PetIcon />,
     link: '/calculators/pet-insurance',
