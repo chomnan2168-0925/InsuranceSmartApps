@@ -1,6 +1,5 @@
 // components/calculators/CalculatorPageLayout.tsx
-// ✅ UPDATED: Added AI Search Optimization support (FAQ, HowTo, Calculator schemas)
-// Maintains all existing functionality and UI/UX from current live version
+// ✅ FINAL VERSION - All schemas handled by SEO component ONLY
 
 import React from 'react';
 import Head from 'next/head';
@@ -29,7 +28,6 @@ interface SEOData {
   keywords_list: string[];
 }
 
-// ✅ NEW: AI Search Optimization interfaces
 interface FAQItem {
   question: string;
   answer: string;
@@ -83,7 +81,6 @@ interface CalculatorPageLayoutProps {
   sidebarTopNews: Article[];
   allTags: string[];
   
-  // ✅ NEW: AI Search Optimization props (optional to maintain backwards compatibility)
   faqs?: FAQItem[];
   howTo?: HowToSchema;
   calculator?: CalculatorSchema;
@@ -107,172 +104,6 @@ const calculatorTypes: CalculatorInfo[] = [
   { id: 'health', label: 'Health', icon: <HealthIcon />, activeColorClass: 'text-sky-600 border-sky-500', hoverColorClass: 'hover:border-sky-500' },
   { id: 'pet', label: 'Pet', icon: <PetIcon />, activeColorClass: 'text-yellow-600 border-yellow-500', hoverColorClass: 'hover:border-yellow-500' },
 ];
-
-// Security: Sanitize text for JSON-LD structured data
-const sanitizeForJsonLd = (text: string): string => {
-  if (!text) return '';
-  return String(text)
-    .replace(/[<>]/g, '')
-    .replace(/"/g, '\\"')
-    .replace(/\\/g, '\\\\')
-    .replace(/\n/g, ' ')
-    .trim();
-};
-
-// ✅ BACKWARDS COMPATIBLE: Keep old structured data if new props not provided
-const CalculatorStructuredData = ({ 
-  calculatorType, 
-  seoData, 
-  calculator, 
-  faqs 
-}: { 
-  calculatorType: CalculatorType; 
-  seoData: SEOData;
-  calculator?: CalculatorSchema;
-  faqs?: FAQItem[];
-}) => {
-  const safeTitle = sanitizeForJsonLd(seoData.title);
-  const safeDescription = sanitizeForJsonLd(seoData.description);
-  
-  // ✅ NEW: Use enhanced calculator schema if provided, otherwise use basic version
-  const structuredData = calculator ? {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": calculator.name,
-    "applicationCategory": "FinanceApplication",
-    "operatingSystem": "Web Browser",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "description": calculator.description,
-    "featureList": calculator.featureList,
-    ...(calculator.screenshot && { "screenshot": calculator.screenshot }),
-    ...(calculator.datePublished && { "datePublished": calculator.datePublished }),
-    ...(calculator.dateModified && { "dateModified": calculator.dateModified }),
-    ...(calculator.ratingValue && calculator.ratingCount && {
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": calculator.ratingValue,
-        "ratingCount": calculator.ratingCount,
-        "bestRating": "5",
-        "worstRating": "1"
-      }
-    })
-  } : {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": safeTitle,
-    "applicationCategory": "FinanceApplication",
-    "operatingSystem": "Web Browser",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "ratingCount": "2847"
-    },
-    "description": safeDescription,
-    "screenshot": `https://www.insurancesmartcalculator.com/images/calculators/${calculatorType}-calculator-screenshot.jpg`,
-    "featureList": [
-      "Free instant calculations",
-      "No personal information required",
-      "Comprehensive needs analysis",
-      "Compare multiple quotes",
-      "Save and print results",
-      "Mobile-friendly interface"
-    ]
-  };
-
-  const breadcrumbData = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "https://www.insurancesmartcalculator.com"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Calculators",
-        "item": "https://www.insurancesmartcalculator.com/calculators"
-      },
-      {
-        "@type": "ListItem",
-        "position": 3,
-        "name": `${calculatorType.charAt(0).toUpperCase() + calculatorType.slice(1)} Insurance Calculator`,
-        "item": `https://www.insurancesmartcalculator.com/calculators/${calculatorType}-insurance`
-      }
-    ]
-  };
-
-  // ✅ NEW: Use enhanced FAQ schema if provided, otherwise use basic version
-  const faqData = faqs && faqs.length > 0 ? {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faqs.map(faq => ({
-      "@type": "Question",
-      "name": faq.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.answer
-      }
-    }))
-  } : {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": `How accurate is the ${sanitizeForJsonLd(calculatorType)} insurance calculator?`,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": `Our ${sanitizeForJsonLd(calculatorType)} insurance calculator provides estimates based on industry-standard rating factors and algorithms. Actual quotes may vary based on specific insurer underwriting guidelines and additional factors.`
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Is the calculator really free to use?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes! Our insurance calculators are 100% free with no hidden fees, no registration required, and no obligation to purchase."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Do I need to provide personal information?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "No. Our calculators provide estimates without collecting personally identifiable information. You can use the tools anonymously."
-        }
-      }
-    ]
-  };
-
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqData) }}
-      />
-    </>
-  );
-};
 
 // Enhanced SEO Content Component
 const EnhancedSEOContent = ({ calculatorType, seoData }: { calculatorType: CalculatorType; seoData: SEOData }) => {
@@ -305,12 +136,12 @@ const EnhancedSEOContent = ({ calculatorType, seoData }: { calculatorType: Calcu
   );
 };
 
-// ✅ NEW: Render FAQ section (visible to users AND AI crawlers)
+// FAQ Section (visible to users AND AI crawlers)
 const FAQSection = ({ faqs }: { faqs?: FAQItem[] }) => {
   if (!faqs || faqs.length === 0) return null;
 
   return (
-    <div className="mt-8 bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+    <div className="mt-8 bg-white p-6 rounded-xl shadow-lg border border-gray-100 faq-section">
       <h2 className="text-2xl font-bold text-navy-blue mb-6 flex items-center gap-2">
         <span className="text-3xl">❓</span>
         Frequently Asked Questions
@@ -346,17 +177,11 @@ const CalculatorPageLayout: React.FC<CalculatorPageLayoutProps> = ({
   const router = useRouter();
   const { allResults, compareMode, setCompareMode, latestResult } = useCalculatorContext();
 
- // ✅ PUT THIS HERE - Inside the component where calculatorType is accessible
   const getCalculatorOGImage = () => {
-    const calculator = siteConfig.calculators.find(
-      (calc) => calc.slug === `${calculatorType}-insurance`
+    const calc = siteConfig.calculators.find(
+      (c) => c.slug === `${calculatorType}-insurance`
     );
-    
-    if (calculator?.ogImageFull) {
-      return calculator.ogImageFull;
-    }
-    
-    return siteConfig.defaultOgImage;
+    return calc?.ogImageFull || siteConfig.defaultOgImage;
   };
 
   const ogImageUrl = getCalculatorOGImage();
@@ -368,6 +193,41 @@ const CalculatorPageLayout: React.FC<CalculatorPageLayoutProps> = ({
     { name: displayTitle, url: `https://www.insurancesmartcalculator.com/calculators/${calculatorType}-insurance` }
   ];
 
+  // Create default FAQs if not provided
+  const defaultFAQs: FAQItem[] = [
+    {
+      question: `How accurate is the ${calculatorType} insurance calculator?`,
+      answer: `Our ${calculatorType} insurance calculator provides estimates based on industry-standard rating factors and algorithms. Actual quotes may vary based on specific insurer underwriting guidelines and additional factors.`
+    },
+    {
+      question: "Is the calculator really free to use?",
+      answer: "Yes! Our insurance calculators are 100% free with no hidden fees, no registration required, and no obligation to purchase."
+    },
+    {
+      question: "Do I need to provide personal information?",
+      answer: "No. Our calculators provide estimates without collecting personally identifiable information. You can use the tools anonymously."
+    }
+  ];
+
+  // Create proper calculator schema with ALL required fields
+  const calculatorSchemaData: CalculatorSchema = {
+    name: calculator?.name || displayTitle,
+    description: calculator?.description || seoData.description,
+    featureList: calculator?.featureList || [
+      "Free instant calculations",
+      "No personal information required",
+      "Comprehensive needs analysis",
+      "Compare multiple quotes",
+      "Save and print results",
+      "Mobile-friendly interface"
+    ],
+    screenshot: calculator?.screenshot || `https://www.insurancesmartcalculator.com/images/og-${calculatorType}-insurance.jpg`,
+    ratingValue: calculator?.ratingValue || "4.8",
+    ratingCount: calculator?.ratingCount || "2847",
+    datePublished: calculator?.datePublished || "2024-01-01",
+    dateModified: calculator?.dateModified || new Date().toISOString().split('T')[0]
+  };
+
   // Handle tab switching with navigation
   const handleTabSwitch = (newType: CalculatorInfo['id']) => {
     router.push(`/calculators/${newType}-insurance`);
@@ -375,43 +235,25 @@ const CalculatorPageLayout: React.FC<CalculatorPageLayoutProps> = ({
 
   return (
     <>
-      {/* ✅ ENHANCED: SEO component now supports AI search optimization */}
+      {/* ✅ ALL SCHEMAS HANDLED BY SEO COMPONENT ONLY */}
       <SEO
         title={seoData.title}
         description={seoData.description}
+        imageUrl={ogImageUrl}
+        canonical={`https://www.insurancesmartcalculator.com/calculators/${calculatorType}-insurance`}
+        keywords={seoData.keywords_list}
         breadcrumbs={breadcrumbs}
-        faqs={faqs}
+        faqs={faqs || defaultFAQs}
         howTo={howTo}
-        calculator={calculator}
-        speakableSelectors={speakableSelectors}
+        calculator={calculatorSchemaData}
+        speakableSelectors={speakableSelectors || ['.calculator-content', '.faq-section']}
       />
       
-      {/* Additional Meta Tags in Head */}
+      {/* Additional Meta Tags - Only non-schema tags here */}
       <Head>
-        <meta name="keywords" content={seoData.keywords} />
-        
-        {/* Open Graph Tags */}
-<meta property="og:title" content={seoData.title} />
-<meta property="og:description" content={seoData.description} />
-<meta property="og:type" content="website" />
-<meta property="og:url" content={`https://www.insurancesmartcalculator.com/calculators/${calculatorType}-insurance`} />
-<meta property="og:image" content={ogImageUrl} />
-<meta property="og:image:secure_url" content={ogImageUrl} />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:site_name" content="Insurance SmartCalculator" />
-
-{/* Twitter Card Tags */}
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content={seoData.title} />
-<meta name="twitter:description" content={seoData.description} />
-<meta name="twitter:image" content={ogImageUrl} />
-<meta name="twitter:image:alt" content={seoData.title} />
-
         {/* Additional SEO Meta Tags */}
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
-        <link rel="canonical" content={`https://www.insurancesmartcalculator.com/calculators/${calculatorType}-insurance`} />
         
         {/* Language and Region */}
         <meta httpEquiv="content-language" content="en-US" />
@@ -425,14 +267,6 @@ const CalculatorPageLayout: React.FC<CalculatorPageLayoutProps> = ({
         pageTitle={seoData.title}
         pageDescription={seoData.description}
       />
-      
-      {/* ✅ ENHANCED: Structured Data with AI optimization support */}
-      <CalculatorStructuredData 
-        calculatorType={calculatorType} 
-        seoData={seoData}
-        calculator={calculator}
-        faqs={faqs}
-      />
 
       <LayoutWithSidebar
         sidebar={<Sidebar topTips={sidebarTopTips} topNews={sidebarTopNews} />}
@@ -440,7 +274,7 @@ const CalculatorPageLayout: React.FC<CalculatorPageLayoutProps> = ({
         <div className="space-y-8">
 
           {/* Enhanced Calculator Section */}
-          <div className="bg-white p-4 md:p-6 rounded-2xl shadow-xl border-2 border-gray-100">
+          <div className="bg-white p-4 md:p-6 rounded-2xl shadow-xl border-2 border-gray-100 calculator-content">
             <div className="mb-4">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl">
@@ -501,8 +335,8 @@ const CalculatorPageLayout: React.FC<CalculatorPageLayoutProps> = ({
           {/* Latest Result */}
           <LatestResult />
 
-          {/* ✅ NEW: FAQ Section (Visible to users AND AI) */}
-          <FAQSection faqs={faqs} />
+          {/* FAQ Section (Visible to users AND AI) */}
+          <FAQSection faqs={faqs || defaultFAQs} />
 
           {/* Recommended Articles */}
           <RecommendedSlider articles={dontMissArticles} />
