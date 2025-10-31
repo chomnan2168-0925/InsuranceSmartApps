@@ -106,41 +106,41 @@ const HomePage: React.FC<HomePageProps> = ({ recommendedPosts, sidebarTopTips, s
     }
   };
 
-  const itemListSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    '@id': `${siteConfig.siteUrl}#calculators`,
-    name: 'Insurance Calculator Tools',
-    description: 'Comprehensive suite of free insurance calculators',
-    numberOfItems: 6,
-    itemListElement: siteConfig.calculators.map((calc, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      item: {
-        '@type': 'SoftwareApplication',
-        '@id': `${siteConfig.siteUrl}/calculators/${calc.slug}`,
-        name: calc.name,
-        url: `${siteConfig.siteUrl}/calculators/${calc.slug}`,
-        description: calc.description,
-        applicationCategory: 'FinanceApplication',
-        operatingSystem: 'Any',
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'USD',
-          availability: 'https://schema.org/InStock'
-        },
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: '4.8',
-          ratingCount: '2847',
-          bestRating: '5',
-          worstRating: '1'
-        },
-        image: calc.ogImageFull
-      }
-    }))
-  };
+  // const itemListSchema = {
+   //  '@context': 'https://schema.org',
+   //  '@type': 'ItemList',
+   //  '@id': `${siteConfig.siteUrl}#calculators`,
+   //  name: 'Insurance Calculator Tools',
+   //  description: 'Comprehensive suite of free insurance calculators',
+   //  numberOfItems: 6,
+   //  itemListElement: siteConfig.calculators.map((calc, index) => ({
+   //    '@type': 'ListItem',
+    //   position: index + 1,
+     //  item: {
+    //     '@type': 'SoftwareApplication',
+     //    '@id': `${siteConfig.siteUrl}/calculators/${calc.slug}`,
+     //    name: calc.name,
+      //   url: `${siteConfig.siteUrl}/calculators/${calc.slug}`,
+      //   description: calc.description,
+      //   applicationCategory: 'FinanceApplication',
+      //   operatingSystem: 'Any',
+      //   offers: {
+      //     '@type': 'Offer',
+      //     price: '0',
+       //    priceCurrency: 'USD',
+       //    availability: 'https://schema.org/InStock'
+       //  },
+       //  aggregateRating: {
+        //   '@type': 'AggregateRating',
+       //    ratingValue: '4.8',
+       //    ratingCount: '2847',
+        //   bestRating: '5',
+        //   worstRating: '1'
+       //  },
+   //      image: calc.ogImageFull
+  //     }
+ //    }))
+ //  };
 
   const collectionPageSchema = {
     '@context': 'https://schema.org',
