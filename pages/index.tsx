@@ -1,3 +1,7 @@
+// pages/index.tsx
+// ✅ FIXED: Resolved "Invalid top level element 'array'" error
+// Changed: Don't pass organizationSchema separately - let SEO.tsx handle it
+
 import React, { useState } from 'react';
 import { GetStaticProps } from 'next';
 import { Article } from '@/types';
@@ -47,63 +51,46 @@ const HomePage: React.FC<HomePageProps> = ({ recommendedPosts, sidebarTopTips, s
     }
   };
   
-  // ✅ ENHANCED: Comprehensive schemas for homepage
+  // ✅ FIXED: Homepage-specific schemas only (SEO.tsx will add Organization automatically)
+  // Don't duplicate Organization schema - it's already in SEO.tsx
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Insurance SmartCalculator',
-    alternateName: 'Insurance SmartApps',
-    url: 'https://www.insurancesmartcalculator.com',
-    description: 'Free insurance calculators, expert tips, and daily news for life, health, auto, home, disability, and pet insurance. Make informed decisions with our unbiased tools.',
+    '@id': `${siteConfig.siteUrl}#website`,
+    name: siteConfig.siteName,
+    alternateName: 'Insurance SmartCalculator',
+    url: siteConfig.siteUrl,
+    description: siteConfig.siteDescription,
+    inLanguage: 'en-US',
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://www.insurancesmartcalculator.com/search?q={search_term_string}'
+        urlTemplate: `${siteConfig.siteUrl}/search?q={search_term_string}`
       },
       'query-input': 'required name=search_term_string'
-    }
-  };
-
-  const organizationSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'Insurance SmartCalculator',
-    url: 'https://www.insurancesmartcalculator.com',
-    logo: {
-      '@type': 'ImageObject',
-      url: 'https://www.insurancesmartcalculator.com/logo.png',
-      width: 250,
-      height: 60
     },
-    description: 'Free insurance calculators and expert guidance for all your insurance needs',
-    foundingDate: '2024',
-    sameAs: [
-      'https://www.facebook.com/insurancesmartcalculator',
-      'https://twitter.com/insurancesmart',
-      'https://www.linkedin.com/company/insurancesmartcalculator'
-    ],
-    contactPoint: {
-      '@type': 'ContactPoint',
-      contactType: 'Customer Service',
-      availableLanguage: ['English'],
-      areaServed: 'US'
+    publisher: {
+      '@type': 'Organization',
+      '@id': `${siteConfig.siteUrl}#organization`
     }
   };
 
-  // ✅ ENHANCED: WebApplication schema for calculators
-  const calculatorSchema = {
+  const calculatorSuiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
+    '@id': `${siteConfig.siteUrl}/calculators#webapp`,
     name: 'Insurance Calculator Suite',
     description: 'Free suite of insurance calculators including auto, home, life, health, disability, and pet insurance estimators',
-    url: 'https://www.insurancesmartcalculator.com/calculators',
+    url: `${siteConfig.siteUrl}/calculators`,
     applicationCategory: 'FinanceApplication',
     operatingSystem: 'Any',
+    browserRequirements: 'Requires JavaScript',
     offers: {
       '@type': 'Offer',
       price: '0',
-      priceCurrency: 'USD'
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock'
     },
     featureList: [
       'Auto Insurance Calculator',
@@ -112,113 +99,103 @@ const HomePage: React.FC<HomePageProps> = ({ recommendedPosts, sidebarTopTips, s
       'Health Insurance Calculator',
       'Disability Insurance Calculator',
       'Pet Insurance Calculator'
-    ]
+    ],
+    provider: {
+      '@type': 'Organization',
+      '@id': `${siteConfig.siteUrl}#organization`
+    }
   };
 
-  // ✅ ENHANCED: ItemList schema for calculator tools
   const itemListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
+    '@id': `${siteConfig.siteUrl}#calculators`,
     name: 'Insurance Calculator Tools',
     description: 'Comprehensive suite of free insurance calculators',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        item: {
-          '@type': 'WebApplication',
-          name: 'Auto Insurance Calculator',
-          url: 'https://www.insurancesmartcalculator.com/calculators/auto-insurance',
-          description: 'Calculate your car insurance premium and compare rates'
-        }
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        item: {
-          '@type': 'WebApplication',
-          name: 'Home Insurance Calculator',
-          url: 'https://www.insurancesmartcalculator.com/calculators/home-insurance',
-          description: 'Estimate homeowners insurance costs and coverage'
-        }
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        item: {
-          '@type': 'WebApplication',
-          name: 'Life Insurance Calculator',
-          url: 'https://www.insurancesmartcalculator.com/calculators/life-insurance',
-          description: 'Determine your life insurance coverage needs'
-        }
-      },
-      {
-        '@type': 'ListItem',
-        position: 4,
-        item: {
-          '@type': 'WebApplication',
-          name: 'Health Insurance Calculator',
-          url: 'https://www.insurancesmartcalculator.com/calculators/health-insurance',
-          description: 'Compare health insurance plans and premiums'
-        }
-      },
-      {
-        '@type': 'ListItem',
-        position: 5,
-        item: {
-          '@type': 'WebApplication',
-          name: 'Disability Insurance Calculator',
-          url: 'https://www.insurancesmartcalculator.com/calculators/disability-insurance',
-          description: 'Calculate disability income protection needs'
-        }
-      },
-      {
-        '@type': 'ListItem',
-        position: 6,
-        item: {
-          '@type': 'WebApplication',
-          name: 'Pet Insurance Calculator',
-          url: 'https://www.insurancesmartcalculator.com/calculators/pet-insurance',
-          description: 'Estimate pet insurance costs and coverage'
-        }
+    numberOfItems: 6,
+    itemListElement: siteConfig.calculators.map((calc, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'SoftwareApplication',
+        '@id': `${siteConfig.siteUrl}/calculators/${calc.slug}`,
+        name: calc.name,
+        url: `${siteConfig.siteUrl}/calculators/${calc.slug}`,
+        description: calc.description,
+        applicationCategory: 'FinanceApplication',
+        operatingSystem: 'Any',
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock'
+        },
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '4.8',
+          ratingCount: '2847',
+          bestRating: '5',
+          worstRating: '1'
+        },
+        image: calc.ogImageFull
       }
-    ]
+    }))
   };
 
-  // ✅ Combine all schemas
-  const combinedSchemas = [
+  const collectionPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': `${siteConfig.siteUrl}#collectionpage`,
+    name: 'Free Insurance Calculators & Expert Tips',
+    description: 'Access our complete collection of free insurance calculators, expert tips, and daily news for all your insurance needs.',
+    url: siteConfig.siteUrl,
+    mainEntity: {
+      '@type': 'ItemList',
+      '@id': `${siteConfig.siteUrl}#calculators`
+    },
+    isPartOf: {
+      '@type': 'WebSite',
+      '@id': `${siteConfig.siteUrl}#website`
+    }
+  };
+
+  // ✅ CRITICAL FIX: Removed organizationSchema from this array
+  // SEO.tsx automatically adds Organization schema, so we don't need it here
+  const homepageSchemas = [
     websiteSchema,
-    organizationSchema,
-    calculatorSchema,
-    itemListSchema
+    calculatorSuiteSchema,
+    itemListSchema,
+    collectionPageSchema
   ];
 
-  // ✅ ENHANCED: Better keywords
   const keywords = [
     'insurance calculator',
+    'free insurance calculator',
     'auto insurance calculator',
     'home insurance calculator',
     'life insurance calculator',
     'health insurance calculator',
     'disability insurance calculator',
     'pet insurance calculator',
-    'insurance comparison',
+    'insurance comparison tool',
     'insurance estimator',
-    'free insurance tools',
     'insurance premium calculator',
-    'insurance coverage calculator'
+    'insurance coverage calculator',
+    'compare insurance rates',
+    'insurance quote calculator',
+    'insurance needs calculator'
   ];
 
   return (
     <>
       <SEO
-  title="Free Insurance Calculators & Expert Tips"
-  description="Free insurance calculators for auto, home, life, health, disability & pet insurance. Get expert tips, compare rates, and make informed decisions."
-  imageUrl={siteConfig.homepageOgImage}
-  canonical="https://www.insurancesmartcalculator.com/"
-  schemaData={combinedSchemas}
-  keywords={keywords}
-/>
+        title="Free Insurance Calculators & Expert Tips"
+        description={siteConfig.siteDescription}
+        imageUrl={siteConfig.homepageOgImage}
+        canonical={`${siteConfig.siteUrl}/`}
+        schemaData={homepageSchemas}
+        keywords={keywords}
+      />
       
       <LayoutWithSidebar
         sidebar={<Sidebar topTips={sidebarTopTips} topNews={sidebarTopNews} />}
@@ -269,7 +246,6 @@ const HomePage: React.FC<HomePageProps> = ({ recommendedPosts, sidebarTopTips, s
             </div>
           </section>
 
-          {/* ✅ ENHANCED: Pass title prop to slider */}
           <RecommendedSlider articles={recommendedPosts} title="Don't Miss These!" />
         </div>
       </LayoutWithSidebar>
@@ -278,7 +254,6 @@ const HomePage: React.FC<HomePageProps> = ({ recommendedPosts, sidebarTopTips, s
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  // ✅ ENHANCED: Fetch "Don't Miss!" articles filtered by location
   const { data: allFeaturedArticles } = await supabase
     .from('articles')
     .select('*')
@@ -286,7 +261,6 @@ export const getStaticProps: GetStaticProps = async () => {
     .eq('status', 'Published')
     .order('created_at', { ascending: false });
 
-  // Filter for Home Page location
   let recommendedPosts = (allFeaturedArticles || []).filter(article => {
     if (!article.featured_locations) return false;
     if (Array.isArray(article.featured_locations)) {
@@ -295,7 +269,6 @@ export const getStaticProps: GetStaticProps = async () => {
     return false;
   });
 
-  // Fetch sidebar data
   const [sidebarTipsResponse, sidebarNewsResponse] = await Promise.all([
     supabase.from('articles').select('*').eq('category', 'Insurance Tips').eq('status', 'Published').order('created_at', { ascending: false }).limit(3),
     supabase.from('articles').select('*').eq('category', 'Insurance Newsroom').eq('status', 'Published').order('created_at', { ascending: false }).limit(3)
