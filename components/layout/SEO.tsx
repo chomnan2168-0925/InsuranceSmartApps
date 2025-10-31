@@ -1,5 +1,5 @@
 // components/layout/SEO.tsx
-// ✅ FINAL PRODUCTION VERSION - Fixed array nesting + Enhanced SEO
+// ✅ FINAL PRODUCTION VERSION - Fixed Calculator Schema for Google Rich Results
 
 import React from 'react';
 import Head from 'next/head';
@@ -267,20 +267,27 @@ const SEO: React.FC<SEOProps> = ({
     }))
   } : null;
 
-  // ✅ CRITICAL FIX: Ensure calculator schema has ALL required fields
+  // ✅ CRITICAL FIX: Complete calculator schema with ALL required fields for Google Rich Results
   const calculatorSchema = calculator ? {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
+    "@id": `${canonicalUrl}#calculator`,
     "name": calculator.name || "Insurance Calculator",
     "applicationCategory": "FinanceApplication",
-    "operatingSystem": "Any",
-    "offers": {
+    "operatingSystem": "Web Browser", // ✅ FIXED: Changed from "Any" to valid value
+    "description": calculator.description,
+    "url": canonicalUrl, // ✅ ADDED: Required field
+    "inLanguage": "en-US", // ✅ ADDED: Language specification
+    "isPartOf": { // ✅ ADDED: Link to parent website
+      "@type": "WebSite",
+      "@id": `${siteUrl}#website`
+    },
+    "offers": { // ✅ REQUIRED: At least one of offers/aggregateRating/applicationCategory
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "USD",
       "availability": "https://schema.org/InStock"
     },
-    "description": calculator.description,
     "featureList": calculator.featureList || [],
     "screenshot": calculator.screenshot || `${siteUrl}/images/og-default.jpg`,
     "aggregateRating": {
@@ -386,7 +393,7 @@ const SEO: React.FC<SEOProps> = ({
     "inLanguage": "en-US"
   } : null;
 
-  // ✅ CRITICAL FIX: Properly combine schemas without nesting
+  // ✅ FIXED: Properly combine schemas without nesting
   const isValidSchema = (schema: any): boolean => {
     if (!schema || typeof schema !== 'object') return false;
     if (!schema['@type']) return false;
@@ -404,11 +411,10 @@ const SEO: React.FC<SEOProps> = ({
     articleSchema
   ].filter(isValidSchema);
 
-  // ✅ CRITICAL FIX: Flatten external schemas to prevent array nesting
+  // ✅ FIXED: Flatten external schemas to prevent array nesting
   let externalSchemas: any[] = [];
   if (schemaData) {
     if (Array.isArray(schemaData)) {
-      // ✅ THE KEY FIX: .flat() prevents nested arrays [[...]]
       externalSchemas = schemaData.flat().filter(isValidSchema);
     } else if (isValidSchema(schemaData)) {
       externalSchemas = [schemaData];
