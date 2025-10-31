@@ -145,7 +145,7 @@ const petCalculatorData = {
   ratingValue: "4.6",
   ratingCount: "987",
   datePublished: "2024-01-15",
-  dateModified: "2025-10-25"
+  dateModified: new Date().toISOString().split('T')[0] // ✅ NEW - Dynamic current date
 };
 
 interface PetInsurancePageProps {
