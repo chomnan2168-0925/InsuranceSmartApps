@@ -1,6 +1,7 @@
 // pages/sitemap-static.xml.tsx
-// Static pages sitemap - ENHANCED VERSION
-// Includes all main category pages and utility pages
+// Static pages sitemap - UPDATED VERSION WITH LASTMOD
+// ✅ REMOVED /calculators (moved to sitemap-calculators.xml only)
+// ✅ Added lastmod dates to all URLs
 
 import { GetServerSideProps } from 'next';
 
@@ -11,7 +12,7 @@ const staticPages = [
   { path: '/', priority: '1.0', changefreq: 'daily' },
   
   // Main category landing pages - Very high priority
-  { path: '/calculators', priority: '0.9', changefreq: 'weekly' },
+  // ✅ REMOVED /calculators to avoid duplication with sitemap-calculators.xml
   { path: '/insurance-tips', priority: '0.9', changefreq: 'daily' },
   { path: '/newsroom', priority: '0.9', changefreq: 'daily' },
   
@@ -31,24 +32,29 @@ const staticPages = [
 
 function createUrlEntry(
   loc: string,
+  lastmod: string,
   priority: string = '0.5',
   changefreq: string = 'weekly'
 ): string {
   return `
   <url>
     <loc>${loc}</loc>
+    <lastmod>${lastmod}</lastmod>
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
   </url>`;
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+  const currentDate = new Date().toISOString().split('T')[0];
+  
   let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
   staticPages.forEach(page => {
     sitemap += createUrlEntry(
       `${SITE_URL}${page.path}`,
+      currentDate,
       page.priority,
       page.changefreq
     );
