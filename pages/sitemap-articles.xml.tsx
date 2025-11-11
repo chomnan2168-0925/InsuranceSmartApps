@@ -1,5 +1,7 @@
 // pages/sitemap-articles.xml.tsx
-// Articles sitemap (Insurance Tips + Newsroom)
+// Articles sitemap (Insurance Tips + Newsroom) - UPDATED VERSION
+// ✅ Adjusted priorities: Evergreen tips (0.8), News (0.6-0.7)
+// ✅ Changed news changefreq from 'weekly' to 'daily'
 // Dynamically fetches from Supabase
 
 import { GetServerSideProps } from 'next';
@@ -20,14 +22,32 @@ function formatDate(dateString: string): string {
   }
 }
 
-function getPriorityForArticle(publishedDate: string, createdDate: string): string {
+function getPriorityForArticle(
+  category: string,
+  publishedDate: string,
+  createdDate: string
+): string {
+  // Insurance Tips (evergreen content) = higher priority
+  if (category === 'Insurance Tips') {
+    return '0.8';
+  }
+  
+  // Newsroom articles - time-sensitive, lower priority
   const publishDate = new Date(publishedDate || createdDate);
   const daysSincePublish = Math.floor((Date.now() - publishDate.getTime()) / (1000 * 60 * 60 * 24));
   
-  if (daysSincePublish <= 7) return '1.0';
-  if (daysSincePublish <= 30) return '0.9';
-  if (daysSincePublish <= 180) return '0.8';
-  return '0.7';
+  if (daysSincePublish <= 7) return '0.7';   // Very recent news
+  if (daysSincePublish <= 30) return '0.6';  // Recent news
+  return '0.6';  // Older news
+}
+
+function getChangefreqForArticle(category: string): string {
+  // Insurance Tips are evergreen, update less frequently
+  if (category === 'Insurance Tips') {
+    return 'monthly';
+  }
+  // News articles change more frequently
+  return 'weekly';
 }
 
 function createUrlEntry(
@@ -47,22 +67,21 @@ function createUrlEntry(
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   try {
-    // Add category index pages first
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">`;
 
-    // Add category landing pages
+    // Add category landing pages with proper priorities
     sitemap += createUrlEntry(
       `${SITE_URL}/insurance-tips`,
       new Date().toISOString().split('T')[0],
-      '0.9',
+      '0.8',  // Higher priority for evergreen tips category
       'daily'
     );
     sitemap += createUrlEntry(
       `${SITE_URL}/newsroom`,
       new Date().toISOString().split('T')[0],
-      '0.9',
+      '0.7',  // Lower priority for time-sensitive news category
       'daily'
     );
 
@@ -88,13 +107,18 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
 
       const lastmod = article.last_updated || article.published_date || article.created_at;
       const formattedDate = formatDate(lastmod);
-      const priority = getPriorityForArticle(article.published_date, article.created_at);
+      const priority = getPriorityForArticle(
+        article.category,
+        article.published_date,
+        article.created_at
+      );
+      const changefreq = getChangefreqForArticle(article.category);
 
       sitemap += createUrlEntry(
         `${SITE_URL}/${categoryPath}/${article.slug}`,
         formattedDate,
         priority,
-        'weekly'
+        changefreq
       );
     });
 
@@ -114,13 +138,15 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>${SITE_URL}/insurance-tips</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>${SITE_URL}/newsroom</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <priority>0.7</priority>
   </url>
 </urlset>`;
 
