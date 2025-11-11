@@ -42,7 +42,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
           </div>
         </div>
         
-        <div className="px-5 pt-1 pb-2 flex-grow flex flex-col">
+        <div className="px-2 pt-1 pb-2 flex-grow flex flex-col">
           <div className="hidden md:block min-h-[2.5rem]">
             <h3 className="text-base font-semibold leading-tight text-navy-blue group-hover:text-gold transition-colors duration-300 line-clamp-2">
               {article.title}
