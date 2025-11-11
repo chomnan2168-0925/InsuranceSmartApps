@@ -1,5 +1,7 @@
 // pages/sitemap-tags.xml.tsx
-// Tag pages sitemap (dynamically generated from article tags)
+// Tag pages sitemap (dynamically generated from article tags) - UPDATED VERSION
+// ✅ Lowered priority from 0.6 to 0.4 (tags are supporting pages)
+// ✅ Changed changefreq from 'weekly' to 'monthly'
 
 import { GetServerSideProps } from 'next';
 import { createClient } from '@supabase/supabase-js';
@@ -24,8 +26,8 @@ function sanitizeSlug(text: string): string {
 
 function createUrlEntry(
   loc: string,
-  priority: string = '0.6',
-  changefreq: string = 'weekly'
+  priority: string = '0.4',
+  changefreq: string = 'monthly'
 ): string {
   return `
   <url>
@@ -76,8 +78,8 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
         processedSlugs.add(slug);
         sitemap += createUrlEntry(
           `${SITE_URL}/tags/${slug}`,
-          '0.6',
-          'weekly'
+          '0.4',      // Lowered from 0.6 - tags are supporting pages
+          'monthly'   // Changed from 'weekly' - tags don't change often
         );
       }
     });
