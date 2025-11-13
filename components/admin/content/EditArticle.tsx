@@ -1,8 +1,11 @@
+// components/admin/content/EditArticle.tsx
+// ✅ ENHANCED VERSION - Uses only camelCase fields (no duplicates)
+
 import React, { useState, useEffect, FormEvent, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import SectionHeader from '@/components/ui/SectionHeader';
-import TagInput from './TagInput';
+import TagInput from './TagInput'; // ✅ Now uses enhanced version
 import { Article } from '@/types';
 import { supabase } from '@/lib/supabaseClient';
 import AdvancedRichTextEditor from './AdvancedRichTextEditor'; 
@@ -17,7 +20,6 @@ const generateSlug = (title: string) => {
     return title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
 };
 
-// Helper function to create SEO-friendly slug for images
 const createImageSlug = (text: string): string => {
   return text
     .toLowerCase()
@@ -28,7 +30,6 @@ const createImageSlug = (text: string): string => {
     .substring(0, 100);
 };
 
-// Author interface
 interface Author {
   id: string;
   name: string;
@@ -37,9 +38,21 @@ interface Author {
 
 const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
   const router = useRouter();
+  
+  // ✅ FIXED: Use only camelCase field names (no duplicates)
   const [article, setArticle] = useState<Partial<Article>>({
-    title: '', slug: '', excerpt: '', content: '', category: 'Insurance Newsroom', status: 'Draft', 
-    tags: [], label: null, imageUrl: '', metaTitle: '', metaDescription: '', targetKeyword: '',
+    title: '', 
+    slug: '', 
+    excerpt: '', 
+    content: '', 
+    category: 'Insurance Tips', // ✅ Changed default to Tips
+    status: 'Draft', 
+    tags: [], 
+    label: null, 
+    imageUrl: '', 
+    metaTitle: '',        // ✅ camelCase only
+    metaDescription: '',  // ✅ camelCase only
+    targetKeyword: '',    // ✅ camelCase only
     author_id: undefined
   });
 
@@ -48,11 +61,10 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
   const [statusMessage, setStatusMessage] = useState('');
   const imageCounterRef = useRef(1);
   
-  // NEW: Authors state
   const [authors, setAuthors] = useState<Author[]>([]);
   const [loadingAuthors, setLoadingAuthors] = useState(true);
 
-  // NEW: Fetch authors on component mount
+  // Fetch authors
   useEffect(() => {
     const fetchAuthors = async () => {
       setLoadingAuthors(true);
@@ -73,6 +85,7 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
     fetchAuthors();
   }, []);
 
+  // Fetch article for editing
   useEffect(() => {
     if (isNewArticle) {
       setLoading(false);
@@ -83,6 +96,7 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
       setLoading(true);
       setStatusMessage('');
       
+      // ✅ FIXED: Select all fields (both old and new for migration)
       const { data, error } = await supabase
         .from('articles')
         .select('*')
@@ -94,10 +108,21 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
         console.error("Error fetching article:", error);
         setTimeout(() => router.push('/admin0925/content'), 2000);
       } else {
+        // ✅ MIGRATION: Prefer camelCase, fallback to snake_case
         setArticle({
           ...data,
+          metaTitle: data.metaTitle || data.meta_title || '',
+          metaDescription: data.metaDescription || data.meta_description || '',
+          targetKeyword: data.targetKeyword || data.target_keyword || '',
           author_id: data.author_id || null
         });
+
+        // ✅ Log any migration needed (development only)
+        if (process.env.NODE_ENV === 'development') {
+          if (data.meta_title && !data.metaTitle) {
+            console.warn('⚠️ Article has old snake_case fields - will be migrated on save');
+          }
+        }
       }
       setLoading(false);
     };
@@ -113,28 +138,41 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
       setArticle(prev => ({ ...prev, [name]: checked }));
     } else {
       setArticle(prev => ({ ...prev, [name]: value }));
+      
+      // Auto-generate slug for new articles
       if (name === 'title' && isNewArticle) { 
         setArticle(prev => ({ ...prev, slug: generateSlug(value) })); 
       }
-      // Auto-fill metaTitle and metaDescription if empty
-      if (name === 'title' && !article.metaTitle) {
-        setArticle(prev => ({ ...prev, metaTitle: value }));
+      
+      // ✅ Auto-fill SEO fields if empty (smart defaults)
+      if (name === 'title') {
+        setArticle(prev => ({ 
+          ...prev, 
+          metaTitle: prev.metaTitle || value  // Only fill if empty
+        }));
       }
-      if (name === 'excerpt' && !article.metaDescription) {
-        setArticle(prev => ({ ...prev, metaDescription: value }));
+      if (name === 'excerpt') {
+        setArticle(prev => ({ 
+          ...prev, 
+          metaDescription: prev.metaDescription || value  // Only fill if empty
+        }));
       }
     }
   };
   
-  const handleContentChange = (content: string) => { setArticle(prev => ({ ...prev, content })); };
-  const handleTagsChange = (tags: string[]) => { setArticle(prev => ({ ...prev, tags })); };
+  const handleContentChange = (content: string) => { 
+    setArticle(prev => ({ ...prev, content })); 
+  };
+  
+  const handleTagsChange = (tags: string[]) => { 
+    setArticle(prev => ({ ...prev, tags })); 
+  };
   
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     setArticle(prev => ({ ...prev, slug: value }));
   };
 
-  // NEW: Handle author selection
   const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setArticle(prev => ({ 
@@ -149,12 +187,12 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
 
     let finalArticle = { ...article };
     
-    // Auto-generate slug from title if it's a new article and slug is empty
+    // Auto-generate slug if empty
     if (isNewArticle && !finalArticle.slug) {
       finalArticle.slug = generateSlug(finalArticle.title || '');
     }
 
-    // Auto-fill SEO fields if empty
+    // ✅ Smart SEO field defaults
     if (!finalArticle.metaTitle) {
       finalArticle.metaTitle = finalArticle.title;
     }
@@ -162,14 +200,21 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
       finalArticle.metaDescription = finalArticle.excerpt;
     }
 
-    // If no author selected, use the first available author
+    // Default author
     if (!finalArticle.author_id && authors.length > 0) {
       finalArticle.author_id = authors[0].id;
       setStatusMessage('No author selected, using default author...');
     }
+
+    // ✅ CRITICAL: Remove snake_case fields before saving
+    // This ensures we only save to camelCase columns
+    const cleanArticle = { ...finalArticle };
+    delete (cleanArticle as any).meta_title;
+    delete (cleanArticle as any).meta_description;
+    delete (cleanArticle as any).target_keyword;
     
     if (isNewArticle) {
-      const { id, ...insertData } = finalArticle; 
+      const { id, ...insertData } = cleanArticle; 
       const { error } = await supabase.from('articles').insert([insertData]);
       
       if (error) {
@@ -179,7 +224,7 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
         setTimeout(() => router.push('/admin0925/content'), 1000);
       }
     } else {
-      const { id, ...updateData } = finalArticle;
+      const { id, ...updateData } = cleanArticle;
       const { error } = await supabase.from('articles').update(updateData).eq('id', id);
 
       if (error) {
@@ -192,11 +237,11 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
   };
   
   const handlePreview = () => { 
-    const previewUrl = `/preview/${article.slug || 'new-article'}`;
+    const categoryPath = article.category === 'Insurance Tips' ? 'insurance-tips' : 'newsroom';
+    const previewUrl = `/preview/${categoryPath}/${article.slug || 'new-article'}`;
     window.open(previewUrl, '_blank');
   };
 
-  // Image upload with SEO-friendly naming
   const imageUploadHandler = (blobInfo: any, progress: (percent: number) => void): Promise<string> => 
     new Promise((resolve, reject) => {
       if (!CLOUDINARY_UPLOAD_PRESET) { 
@@ -237,7 +282,6 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
       .catch(err => reject(`Image upload failed: ${err}`));
     });
 
-  // Cloudinary widget with SEO-friendly naming
   const openCloudinaryWidget = (onSuccess: (url: string) => void) => {
     if (!(window as any).cloudinary) { 
       alert("Cloudinary script not loaded."); 
@@ -294,7 +338,7 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
   
   if (loading) {
     return <p className="text-center p-8">Loading article from Supabase...</p>;
-  }
+  };
   
   const handleSuggestKeywords = () => {
     alert("AI feature coming soon! This will suggest tags and keywords based on your content.");
@@ -380,7 +424,6 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
                 </select>
               </div>
 
-              {/* NEW: Author Selector */}
               <div>
                 <label htmlFor="author_id" className="block text-sm font-bold text-gray-700">
                   Author
@@ -438,8 +481,8 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
                <div>
                   <label htmlFor="category" className="block text-sm font-bold text-gray-700">Category</label>
                   <select id="category" name="category" value={article.category} onChange={handleChange} className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-navy-blue focus:border-navy-blue sm:text-sm rounded-md">
-                      <option>Insurance Newsroom</option>
                       <option>Insurance Tips</option>
+                      <option>Insurance Newsroom</option>
                   </select>
                 </div>
                 
@@ -456,34 +499,73 @@ const EditArticle: React.FC<{ articleId?: string }> = ({ articleId }) => {
                     />
                  </div>
 
+                 {/* ✅ ENHANCED: New TagInput component */}
                  <div>
-                    <label className="block text-sm font-bold text-gray-700 pb-2 pt-0">Tags</label>
+                    <label className="block text-sm font-bold text-gray-700 pb-2 pt-0">Tags & Keywords</label>
                     <TagInput tags={article.tags || []} setTags={handleTagsChange} />
-                    <button type="button" onClick={handleSuggestKeywords} className="mt-2 text-sm text-navy-blue hover:underline font-semibold">
-                      Suggest Tags & Keywords
-                    </button>
                  </div>
             </div>
 
+            {/* ✅ SEO section with clearer labeling */}
             <div className="bg-white p-3 rounded-lg shadow-md space-y-2">
-                <h3 className="text-md font-bold text-navy-blue border-b pb-0 pt-0">Search Engine Optimization</h3>
+                <h3 className="text-md font-bold text-navy-blue border-b pb-0 pt-0">Search Engine Optimization (SEO)</h3>
+                
                 <div>
-                    <label htmlFor="metaTitle" className="block text-sm font-bold text-gray-700">Meta Title</label>
-                    <input type="text" id="metaTitle" name="metaTitle" value={article.metaTitle || ''} onChange={handleChange}
-                        className="mt-1 block w-full px-2 py-2 bg-white text-sm border border-gray-300 rounded-md shadow-sm" />
-                    <p className="text-xs text-gray-500 mt-1">Appears in search results and browser tabs. Keep it under 60 characters.</p>
+                    <label htmlFor="metaTitle" className="block text-sm font-bold text-gray-700">
+                      Meta Title
+                      <span className="text-xs font-normal text-gray-500 ml-2">(Shown in Google search)</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      id="metaTitle" 
+                      name="metaTitle" 
+                      value={article.metaTitle || ''} 
+                      onChange={handleChange}
+                      maxLength={60}
+                      className="mt-1 block w-full px-2 py-2 bg-white text-sm border border-gray-300 rounded-md shadow-sm" 
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      {article.metaTitle?.length || 0}/60 characters • Auto-filled from title if empty
+                    </p>
                 </div>
+                
                 <div>
-                    <label htmlFor="metaDescription" className="block text-sm font-bold text-gray-700">Meta Description</label>
-                    <textarea id="metaDescription" name="metaDescription" rows={3} value={article.metaDescription || ''} onChange={handleChange}
-                        className="mt-1 block w-full px-2 py-2 bg-white text-sm border border-gray-300 rounded-md shadow-sm" placeholder="A brief summary for search engines." />
-                    <p className="text-xs text-gray-500 mt-1">Appears in search results. Keep it under 160 characters.</p>
+                    <label htmlFor="metaDescription" className="block text-sm font-bold text-gray-700">
+                      Meta Description
+                      <span className="text-xs font-normal text-gray-500 ml-2">(Shown in Google search)</span>
+                    </label>
+                    <textarea 
+                      id="metaDescription" 
+                      name="metaDescription" 
+                      rows={3} 
+                      value={article.metaDescription || ''} 
+                      onChange={handleChange}
+                      maxLength={160}
+                      className="mt-1 block w-full px-2 py-2 bg-white text-sm border border-gray-300 rounded-md shadow-sm" 
+                      placeholder="A compelling summary for search engines..." 
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      {article.metaDescription?.length || 0}/160 characters • Auto-filled from excerpt if empty
+                    </p>
                 </div>
+                
                 <div>
-                    <label htmlFor="targetKeyword" className="block text-sm font-bold text-gray-700">Target Keyword</label>
-                    <input type="text" id="targetKeyword" name="targetKeyword" value={article.targetKeyword || ''} onChange={handleChange}
-                        className="mt-1 block w-full px-3 py-2 bg-white text-sm border border-gray-300 rounded-md shadow-sm" />
-                    <p className="text-xs text-gray-500 mt-1">The main keyword this article is targeting.</p>
+                    <label htmlFor="targetKeyword" className="block text-sm font-bold text-gray-700">
+                      Focus Keyword
+                      <span className="text-xs font-normal text-gray-500 ml-2">(Main topic of article)</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      id="targetKeyword" 
+                      name="targetKeyword" 
+                      value={article.targetKeyword || ''} 
+                      onChange={handleChange}
+                      className="mt-1 block w-full px-3 py-2 bg-white text-sm border border-gray-300 rounded-md shadow-sm" 
+                      placeholder="e.g., auto insurance savings"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      1-3 words that best describe this article's topic
+                    </p>
                 </div>
             </div>
            
