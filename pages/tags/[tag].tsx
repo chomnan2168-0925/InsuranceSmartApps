@@ -71,7 +71,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     .from('articles')
     .select('*')
     .eq('status', 'Published')
-    .order('created_at', { ascending: false });
+    .order('createdAt', { ascending: false });
 
   if (articlesError || !allArticles) {
     return { notFound: true };
