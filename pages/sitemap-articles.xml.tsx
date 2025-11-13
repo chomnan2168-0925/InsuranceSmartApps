@@ -1,8 +1,5 @@
 // pages/sitemap-articles.xml.tsx
-// Articles sitemap (Insurance Tips + Newsroom) - UPDATED VERSION
-// ✅ Adjusted priorities: Evergreen tips (0.8), News (0.6-0.7)
-// ✅ Changed news changefreq from 'weekly' to 'daily'
-// Dynamically fetches from Supabase
+// ✅ FIXED: All field names changed to camelCase
 
 import { GetServerSideProps } from 'next';
 import { createClient } from '@supabase/supabase-js';
@@ -27,26 +24,22 @@ function getPriorityForArticle(
   publishedDate: string,
   createdDate: string
 ): string {
-  // Insurance Tips (evergreen content) = higher priority
   if (category === 'Insurance Tips') {
     return '0.8';
   }
   
-  // Newsroom articles - time-sensitive, lower priority
   const publishDate = new Date(publishedDate || createdDate);
   const daysSincePublish = Math.floor((Date.now() - publishDate.getTime()) / (1000 * 60 * 60 * 24));
   
-  if (daysSincePublish <= 7) return '0.7';   // Very recent news
-  if (daysSincePublish <= 30) return '0.6';  // Recent news
-  return '0.6';  // Older news
+  if (daysSincePublish <= 7) return '0.7';
+  if (daysSincePublish <= 30) return '0.6';
+  return '0.6';
 }
 
 function getChangefreqForArticle(category: string): string {
-  // Insurance Tips are evergreen, update less frequently
   if (category === 'Insurance Tips') {
     return 'monthly';
   }
-  // News articles change more frequently
   return 'weekly';
 }
 
@@ -71,26 +64,25 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">`;
 
-    // Add category landing pages with proper priorities
     sitemap += createUrlEntry(
       `${SITE_URL}/insurance-tips`,
       new Date().toISOString().split('T')[0],
-      '0.8',  // Higher priority for evergreen tips category
+      '0.8',
       'daily'
     );
     sitemap += createUrlEntry(
       `${SITE_URL}/newsroom`,
       new Date().toISOString().split('T')[0],
-      '0.7',  // Lower priority for time-sensitive news category
+      '0.7',
       'daily'
     );
 
-    // Fetch all published articles
+    // ✅ FIXED: Use camelCase field names
     const { data: articles, error } = await supabase
       .from('articles')
-      .select('slug, category, created_at, published_date, last_updated')
+      .select('slug, category, createdAt, publishedDate, lastUpdated')
       .eq('status', 'Published')
-      .order('published_date', { ascending: false });
+      .order('publishedDate', { ascending: false });
 
     if (error) {
       console.error('Error fetching articles:', error);
@@ -99,18 +91,18 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
 
     const publishedArticles = articles || [];
 
-    // Add individual article pages
     publishedArticles.forEach(article => {
       const categoryPath = article.category === 'Insurance Tips'
         ? 'insurance-tips'
         : 'newsroom';
 
-      const lastmod = article.last_updated || article.published_date || article.created_at;
+      // ✅ FIXED: Use camelCase field names
+      const lastmod = article.lastUpdated || article.publishedDate || article.createdAt;
       const formattedDate = formatDate(lastmod);
       const priority = getPriorityForArticle(
         article.category,
-        article.published_date,
-        article.created_at
+        article.publishedDate,
+        article.createdAt
       );
       const changefreq = getChangefreqForArticle(article.category);
 
@@ -133,7 +125,6 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   } catch (error) {
     console.error('Error generating articles sitemap:', error);
 
-    // Fallback sitemap with just category pages
     const fallbackSitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
