@@ -136,7 +136,7 @@ const ContentList = () => {
     }
   };
 
-  // COMPONENT for sortable table headers to keep JSX clean
+  // ✅ FIXED: Updated SortableHeader component with proper type handling
   const SortableHeader = ({ label, sortKey }: { label: string; sortKey: keyof Article }) => {
     const isSorted = sortConfig.key === sortKey;
     return (
@@ -205,12 +205,12 @@ const ContentList = () => {
                 <tr className="border-b text-sm">
                   <th className="p-3 w-4"><input type="checkbox" onChange={handleSelectAll} checked={selectedArticles.length > 0 && selectedArticles.length === filteredAndSortedPosts.length}/></th>
                   <th className="p-3">#</th>
-                  <SortableHeader label="Title" sortKey="title" />
-                  <SortableHeader label="Category" sortKey="category" />
-                  <SortableHeader label="Date" sortKey="createdAt" />
-                  <SortableHeader label="Status" sortKey="status" />
-                  <SortableHeader label="Views" sortKey="views" />
-                  <SortableHeader label="Shares" sortKey="shares" />
+                  <SortableHeader label="Title" sortKey={"title" as keyof Article} />
+                  <SortableHeader label="Category" sortKey={"category" as keyof Article} />
+                  <SortableHeader label="Date" sortKey={"createdAt" as keyof Article} />
+                  <SortableHeader label="Status" sortKey={"status" as keyof Article} />
+                  <SortableHeader label="Views" sortKey={"views" as keyof Article} />
+                  <SortableHeader label="Shares" sortKey={"shares" as keyof Article} />
                   <th className="p-3">Actions</th>
                 </tr>
               </thead>
@@ -221,13 +221,12 @@ const ContentList = () => {
                     <td className="p-3 text-gray-500">{(currentPage - 1) * ROWS_PER_PAGE + index + 1}</td>
                     <td className="p-3 font-medium text-gray-800">{post.title}</td>
                     <td className="p-3 text-gray-600">{post.category}</td>
-                    {/* ✅ FIXED: Use camelCase createdAt */}
                     <td className="p-3 text-gray-600">
-                      {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : '–'}
+                      {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : '—'}
                     </td>
                     <td className="p-3"><span className={`px-2 py-1 text-xs font-semibold rounded-full ${post.status === 'Published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{post.status}</span></td>
-                    <td className="p-3 text-gray-600">{post.views?.toLocaleString() || '–'}</td>
-                    <td className="p-3 text-gray-600">{post.shares?.toLocaleString() || '–'}</td>
+                    <td className="p-3 text-gray-600">{post.views?.toLocaleString() || '—'}</td>
+                    <td className="p-3 text-gray-600">{post.shares?.toLocaleString() || '—'}</td>
                     <td className="p-3">
                       <div className="flex items-center gap-3">
                         <button onClick={() => router.push(`/admin0925/content/${post.slug}`)} className="text-navy-blue hover:underline font-semibold">
