@@ -13,10 +13,10 @@ interface Author {
   name: string;
   role: string;
   bio: string;
-  avatar_url: string;
+  avatarUrl?: string;
   specialty: string;
   credentials: string[];
-  articles_count: number;
+  articlesCount: number;
 }
 
 interface AuthorProfilePageProps {
@@ -26,7 +26,7 @@ interface AuthorProfilePageProps {
 
 const AuthorProfilePage: React.FC<AuthorProfilePageProps> = ({ author, articles }) => {
   const fullUrl = `https://www.insurancesmartcalculator.com/authors/${author.id}`;
-  const imageUrl = author.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(author.name)}&size=400&background=1A365D&color=D4AF37&bold=true`;
+  const imageUrl = author.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(author.name)}&size=400&background=1A365D&color=D4AF37&bold=true`;
 
   return (
     <>
@@ -79,7 +79,7 @@ const AuthorProfilePage: React.FC<AuthorProfilePageProps> = ({ author, articles 
                   </p>
                 )}
                 <p className="text-sm text-gray-600">
-                  {author.articles_count || 0} Published {author.articles_count === 1 ? 'Article' : 'Articles'}
+                  {author.articlesCount || 0} Published {author.articlesCount === 1 ? 'Article' : 'Articles'}
                 </p>
               </div>
             </div>
@@ -149,34 +149,27 @@ const AuthorProfilePage: React.FC<AuthorProfilePageProps> = ({ author, articles 
   );
 };
 
-// ============================================
-// 🔒 SECURE SERVER-SIDE RENDERING
-// ============================================
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const authorId = params?.authorId as string;
 
   console.log('[Author Profile] Fetching author:', authorId);
 
-  // ✅ SECURITY LAYER 1: Database-level role check
-  // Only fetch profiles with role='Author' to prevent admin exposure
   const { data: author, error: authorError } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', authorId)
-    .eq('role', 'Author')  // 🔒 CRITICAL: Only Authors can have public profiles
+    .eq('role', 'Author')
     .single();
 
-  // ✅ SECURITY LAYER 2: Return 404 for non-Author profiles
   if (authorError || !author) {
     console.error('[Author Profile] Error or unauthorized role:', authorError);
     return {
-      notFound: true,  // Returns 404 page for admins/editors/non-existent profiles
+      notFound: true,
     };
   }
 
   console.log('[Author Profile] Authorized Author found:', author.name);
 
-  // ✅ SECURITY LAYER 3: Only fetch Published articles
   const { data: articles, error: articlesError } = await supabase
     .from('articles')
     .select(`
@@ -187,8 +180,8 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       )
     `)
     .eq('author_id', authorId)
-    .eq('status', 'Published')  // Only show published content
-    .order('published_date', { ascending: false });
+    .eq('status', 'Published')
+    .order('publishedDate', { ascending: false });
 
   if (articlesError) {
     console.error('[Author Profile] Error fetching articles:', articlesError);
