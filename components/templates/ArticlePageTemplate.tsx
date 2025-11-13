@@ -1,5 +1,5 @@
 // components/templates/ArticlePageTemplate.tsx
-// Clean SEO-enhanced version - keeps your styling, adds only SEO essentials
+// ✅ FIXED VERSION - Uses only camelCase field names
 
 import React from 'react';
 import { Article } from '@/types';
@@ -16,16 +16,15 @@ import InPostAd from '@/components/admin/settings/InPostAd';
 import Link from 'next/link';
 import siteConfig from '@/config/siteConfig.json';
 
-// Simple Author & Date Metadata Component - ENHANCED for SEO
+// Simple Author & Date Metadata Component
 const ArticleMetadata: React.FC<{ post: Article }> = ({ post }) => {
-  // Show updated date if it exists, otherwise published date
-  const displayDate = post.last_updated || post.published_date || post.created_at;
-  const dateLabel = post.last_updated ? 'Updated' : 'Published';
+  // ✅ FIXED: Use camelCase field names
+  const displayDate = post.lastUpdated || post.publishedDate || post.createdAt;
+  const dateLabel = post.lastUpdated ? 'Updated' : 'Published';
   
   return (
     <div className="mt-6 pt-4 border-t border-gray-200 text-sm text-gray-600">
       <div className="flex flex-col gap-2">
-        {/* Single Date Display with Icon - SEO optimized with <time> tag */}
         {displayDate && (
           <div className="flex items-center gap-2">
             <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,7 +43,6 @@ const ArticleMetadata: React.FC<{ post: Article }> = ({ post }) => {
           </div>
         )}
         
-        {/* Author - with matching icon */}
         {post.author && (
           <div className="flex items-center gap-2">
             <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,22 +64,19 @@ const ArticleMetadata: React.FC<{ post: Article }> = ({ post }) => {
   );
 };
 
-// Extract FAQs from content - PURE SEO ENHANCEMENT
+// Extract FAQs from content
 const extractFAQs = (content: string): Array<{question: string; answer: string}> => {
   const faqs: Array<{question: string; answer: string}> = [];
   
-  // Match H2/H3 headers that look like questions
   const headerRegex = /<h[23][^>]*>(.*?)<\/h[23]>/gi;
   const headers = content.match(headerRegex) || [];
   
   headers.forEach((header) => {
     const question = header.replace(/<[^>]*>/g, '').trim();
     
-    // Check if it's a question
     if (question.includes('?') || 
         /^(how|what|why|when|where|which|who|can|should|do|does|is|are)/i.test(question)) {
       
-      // Extract the paragraph after this header
       const headerIndex = content.indexOf(header);
       const afterHeader = content.substring(headerIndex + header.length);
       const nextParagraph = afterHeader.match(/<p[^>]*>(.*?)<\/p>/i);
@@ -96,32 +91,45 @@ const extractFAQs = (content: string): Array<{question: string; answer: string}>
     }
   });
   
-  return faqs.slice(0, 5); // Limit to 5 FAQs
+  return faqs.slice(0, 5);
 };
 
-// Extract keywords - PURE SEO ENHANCEMENT
+// ✅ FIXED: Properly handle both camelCase and snake_case field names for migration
 const extractKeywords = (post: Article): string[] => {
   const keywords = new Set<string>();
   
+  // Add tags
   post.tags?.forEach(tag => keywords.add(tag));
   
-  // ✅ FIXED: Store the keyword value first to ensure type safety
-  const targetKeyword = post.targetKeyword || post.target_keyword;
+  // ✅ FIXED: Check both possible field name variations (for migration compatibility)
+  const targetKeyword = (post as any).targetKeyword || 
+                       (post as any).target_keyword || 
+                       (post as any).metaKeywords || 
+                       (post as any).meta_keywords;
+  
   if (targetKeyword) {
     keywords.add(targetKeyword);
   }
   
+  // Add category-based keywords
   keywords.add(post.category.toLowerCase());
   keywords.add('insurance');
-  keywords.add('insurance tips');
+  
+  if (post.category === 'Insurance Tips') {
+    keywords.add('insurance tips');
+    keywords.add('save on insurance');
+  } else {
+    keywords.add('insurance news');
+    keywords.add('insurance industry');
+  }
   
   return Array.from(keywords);
 };
 
-// Calculate reading time - PURE SEO ENHANCEMENT
+// Calculate reading time
 const calculateReadingTime = (content: string): number => {
   const wordCount = content.replace(/<[^>]*>/g, '').split(/\s+/).length;
-  return Math.ceil(wordCount / 200); // 200 words per minute
+  return Math.ceil(wordCount / 200);
 };
 
 interface ArticlePageTemplateProps {
@@ -149,10 +157,10 @@ const ArticlePageTemplate: React.FC<ArticlePageTemplateProps> = ({
 
   // Ensure absolute image URL
   const getAbsoluteImageUrl = (imageUrl?: string) => {
-  if (!imageUrl) return siteConfig.defaultOgImage;
-  if (imageUrl.startsWith('http')) return imageUrl;
-  return `https://www.insurancesmartcalculator.com${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
-};
+    if (!imageUrl) return siteConfig.defaultOgImage;
+    if (imageUrl.startsWith('http')) return imageUrl;
+    return `https://www.insurancesmartcalculator.com${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+  };
 
   const absoluteImageUrl = getAbsoluteImageUrl(post.imageUrl);
 
@@ -168,28 +176,49 @@ const ArticlePageTemplate: React.FC<ArticlePageTemplateProps> = ({
     { name: post.title, url: fullUrl },
   ];
 
+  // ✅ FIXED: Helper function to get meta field value (handles both camelCase and snake_case for migration)
+  const getMetaField = (camelCase: keyof Article, snakeCase: string): string => {
+    return (post as any)[camelCase] || (post as any)[snakeCase] || '';
+  };
+
+  // ✅ FIXED: Get SEO values with proper fallbacks
+  const seoTitle = getMetaField('metaTitle' as keyof Article, 'meta_title') || post.title;
+  const seoDescription = getMetaField('metaDescription' as keyof Article, 'meta_description') || post.excerpt;
+
+  // Debug logging (remove in production)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 Article SEO Debug:', {
+      slug: post.slug,
+      metaTitle: getMetaField('metaTitle' as keyof Article, 'meta_title'),
+      metaDescription: getMetaField('metaDescription' as keyof Article, 'meta_description'),
+      targetKeyword: getMetaField('targetKeyword' as keyof Article, 'target_keyword'),
+      tags: post.tags,
+      keywords: keywords,
+    });
+  }
+
   return (
     <>
-      {/* ENHANCED SEO Component - Only change is passing more data */}
+      {/* ✅ FIXED: SEO Component with proper field values */}
       <SEO
-        title={post.metaTitle || post.meta_title || post.title}
-        description={post.metaDescription || post.meta_description || post.excerpt}
+        title={seoTitle}
+        description={seoDescription}
         imageUrl={absoluteImageUrl}
         canonical={fullUrl}
         
-        // Article-specific metadata
+        // Article-specific metadata - ✅ FIXED: Use camelCase
         isArticle={true}
-        publishedDate={post.published_date || post.created_at}
-        modifiedDate={post.last_updated || post.created_at}
+        publishedDate={post.publishedDate || post.createdAt}
+        modifiedDate={post.lastUpdated || post.createdAt}
         author={{
           name: post.author?.name || 'Insurance SmartCalculator Team',
           url: post.author?.id ? `https://www.insurancesmartcalculator.com/authors/${post.author.id}` : undefined,
-          image: post.author?.avatar_url
+          image: post.author?.avatarUrl
         }}
         category={post.category}
         tags={post.tags || []}
         
-        // SEO ENHANCEMENTS - New props that create schemas
+        // SEO ENHANCEMENTS
         breadcrumbs={breadcrumbs}
         faqs={faqs.length > 0 ? faqs : undefined}
         keywords={keywords}
@@ -200,14 +229,13 @@ const ArticlePageTemplate: React.FC<ArticlePageTemplateProps> = ({
         <div>
           <AdminToolbar slug={post.slug} />
 
-          {/* Changed div to article for semantic HTML - SEO best practice */}
           <article className="bg-white rounded-lg shadow-sm px-3 pt-0.5 pb-0">
-            {/* Keep your original title - no changes to spacing */}
+            {/* ✅ ADDED: Proper H1 tag for SEO */}
             <h1 className="text-lg md:text-xl font-bold text-navy-blue mt-1 mb-2">
               {post.title}
             </h1>
 
-            {/* Featured Image - Minor SEO enhancement with figure tag */}
+            {/* Featured Image */}
             <figure className="relative w-full mb-2 rounded-lg overflow-hidden shadow-lg bg-gray-100">
               <Image
                 src={post.imageUrl}
@@ -219,11 +247,10 @@ const ArticlePageTemplate: React.FC<ArticlePageTemplateProps> = ({
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                 style={{ objectFit: 'contain' }}
               />
-              {/* Hidden caption for accessibility/SEO */}
               <figcaption className="sr-only">{post.title}</figcaption>
             </figure>
 
-            {/* Article Content - Added itemProp for schema.org microdata */}
+            {/* Article Content */}
             <div
               className="prose lg:prose-lg max-w-none mx-auto article-content -mt-3"
               style={{ lineHeight: '1.75' }}
@@ -232,15 +259,15 @@ const ArticlePageTemplate: React.FC<ArticlePageTemplateProps> = ({
               <InPostAd content={post.content} adSlot={inpostAd} insertAfterParagraph={2} />
             </div>
 
-            {/* Tags Section - No changes */}
+            {/* Tags Section */}
             <div className="mt-8">
               <TagsSection tags={post.tags} />
             </div>
 
-            {/* Enhanced Metadata - Shows single date with icon */}
+            {/* Metadata */}
             <ArticleMetadata post={post} />
 
-            {/* Enhanced Share Section - No visual changes, just better structure */}
+            {/* Share Section */}
             <div className="mt-4 pt-3 border-t-2 border-gray-200 bg-gradient-to-r from-gray-100 to-blue-100 -mx-1 px-5 py-4 rounded-lg">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <div>
@@ -269,7 +296,7 @@ const ArticlePageTemplate: React.FC<ArticlePageTemplateProps> = ({
               </div>
             </div>
 
-            {/* Recommended Articles - "Don't Miss These!" Slider */}
+            {/* Recommended Articles */}
             <div className="mt-8">
               <RecommendedSlider articles={recommendedPosts} title="Don't Miss These!" />
             </div>
