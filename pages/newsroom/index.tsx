@@ -26,7 +26,7 @@ const NewsroomPage: React.FC<NewsroomPageProps> = (props) => {
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  // ✅ OPTIMIZED: Fetch only Newsroom posts with minimal fields for listing
+  // ✅ FIXED: Use camelCase field names
   const { data: newsroomPosts, error: newsError } = await supabase
     .from('articles')
     .select(`
@@ -36,28 +36,28 @@ export const getStaticProps: GetStaticProps = async () => {
       excerpt,
       imageUrl,
       category,
-      created_at,
-      published_date,
+      createdAt,
+      publishedDate,
       label,
       tags,
       author:profiles!author_id (
         id,
         name,
-        avatar_url
+        avatarUrl
       )
     `)
     .eq('category', 'Insurance Newsroom')
     .eq('status', 'Published')
-    .order('created_at', { ascending: false })
-    .limit(50); // Limit initial fetch to reasonable amount
+    .order('createdAt', { ascending: false })
+    .limit(50);
 
-  // ✅ OPTIMIZED: Fetch only Tips posts for sidebar (minimal fields)
+  // ✅ FIXED: Use camelCase field names
   const { data: tipsPosts, error: tipsError } = await supabase
     .from('articles')
-    .select('id, slug, title, excerpt, imageUrl, category, created_at, published_date')
+    .select('id, slug, title, excerpt, imageUrl, category, createdAt, publishedDate')
     .eq('category', 'Insurance Tips')
     .eq('status', 'Published')
-    .order('created_at', { ascending: false })
+    .order('createdAt', { ascending: false })
     .limit(3);
 
   if (newsError || !newsroomPosts) {
@@ -75,18 +75,17 @@ export const getStaticProps: GetStaticProps = async () => {
     };
   }
 
-  // Transform posts
+  // ✅ FIXED: Use camelCase field names
   const transformedNews = newsroomPosts.map(post => ({
     ...post,
-    date: post.published_date || post.created_at,
+    date: post.publishedDate || post.createdAt,
   }));
 
   const transformedTips = (tipsPosts || []).map(post => ({
     ...post,
-    date: post.published_date || post.created_at,
+    date: post.publishedDate || post.createdAt,
   }));
   
-  // Get total count for pagination
   const { count: totalNewsCount } = await supabase
     .from('articles')
     .select('id', { count: 'exact', head: true })
@@ -95,7 +94,6 @@ export const getStaticProps: GetStaticProps = async () => {
     
   const totalPages = Math.ceil((totalNewsCount || 0) / POSTS_PER_PAGE);
 
-  // Build props
   const pinnedPosts = transformedNews.filter(p => p.label === 'Most Read' || p.label === 'Sponsored');
   const paginatedPosts = transformedNews.slice(0, POSTS_PER_PAGE);
   const sidebarTopNews = transformedNews.slice(0, 3);
