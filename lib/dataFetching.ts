@@ -8,7 +8,7 @@ export const getRecommendedArticles = async (): Promise<Article[]> => {
       .select('*')
       .eq('label', "Don't Miss!")
       .eq('status', 'Published')
-      .order('created_at', { ascending: false });
+      .order('createdAt', { ascending: false });
     
     if (error) throw error;
     return data || [];
@@ -28,7 +28,7 @@ export const getSidebarArticles = async (
       .select('*')
       .eq('category', category)
       .eq('status', 'Published')
-      .order('created_at', { ascending: false })
+      .order('createdAt', { ascending: false })
       .limit(limit);
     
     if (error) throw error;
