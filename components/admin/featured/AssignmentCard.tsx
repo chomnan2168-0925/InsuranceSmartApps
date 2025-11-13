@@ -37,7 +37,6 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ title, labelToAssign, d
     }
     setIsSaving(true);
 
-    // ✅ FIXED: Use camelCase featuredLocations
     const updateData: { label: string; featuredLocations?: string[] } = {
       label: labelToAssign,
     };
@@ -63,7 +62,6 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ title, labelToAssign, d
 
   const handleRemove = async (article: Article) => {
     if (window.confirm(`Are you sure you want to remove the "${labelToAssign}" label from "${article.title}"?`)) {
-      // ✅ FIXED: Use camelCase featuredLocations
       const { error } = await supabase
         .from('articles')
         .update({ label: null, featuredLocations: null })
@@ -89,9 +87,9 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ title, labelToAssign, d
             <li key={article.id} className="p-3 border rounded-md flex justify-between items-center text-sm bg-gray-50">
               <div>
                 <p className="font-semibold">{article.title}</p>
-                {/* ✅ FIXED: Use camelCase featuredLocations */}
-                {showLocations && article.featuredLocations && (
-                  <p className="text-xs text-gray-500 mt-1">Locations: {article.featuredLocations.join(', ')}</p>
+                {/* ✅ FIXED: Type assertion for featuredLocations */}
+                {showLocations && (article as any).featuredLocations && (
+                  <p className="text-xs text-gray-500 mt-1">Locations: {(article as any).featuredLocations.join(', ')}</p>
                 )}
               </div>
               <button onClick={() => handleRemove(article)} className="text-red-500 hover:underline font-semibold flex-shrink-0 ml-2">Remove</button>
