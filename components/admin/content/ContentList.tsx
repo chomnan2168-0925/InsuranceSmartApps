@@ -222,7 +222,7 @@ const ContentList = () => {
                     <td className="p-3 font-medium text-gray-800">{post.title}</td>
                     <td className="p-3 text-gray-600">{post.category}</td>
                     <td className="p-3 text-gray-600">
-                      {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : '—'}
+                      {(post as any).createdAt ? new Date((post as any).createdAt).toLocaleDateString() : '—'}
                     </td>
                     <td className="p-3"><span className={`px-2 py-1 text-xs font-semibold rounded-full ${post.status === 'Published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{post.status}</span></td>
                     <td className="p-3 text-gray-600">{post.views?.toLocaleString() || '—'}</td>
