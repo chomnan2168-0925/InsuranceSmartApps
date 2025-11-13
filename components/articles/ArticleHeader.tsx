@@ -14,7 +14,7 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({ post }) => {
   return (
     <div className="my-6 flex items-center space-x-4">
       <Image
-        src={post.author.avatarUrl}
+        src={post.author.avatarUrl || '/default-avatar.png'}
         alt={post.author.name}
         width={48}
         height={48}
@@ -23,8 +23,8 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({ post }) => {
       <div>
         <p className="text-base font-semibold text-gray-900">{post.author.name}</p>
         <p className="text-sm text-gray-500">
-          {(post.date || post.published_date || post.created_at) ? (
-            <>Published on {new Date(post.date || post.published_date || post.created_at || '').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</>
+          {(post.date || post.publishedDate || post.createdAt) ? (
+            <>Published on {new Date(post.date || post.publishedDate || post.createdAt || '').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</>
           ) : (
             <>Published recently</>
           )}
