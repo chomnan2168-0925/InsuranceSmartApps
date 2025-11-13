@@ -10,7 +10,6 @@ interface AssignmentCardProps {
   assignedArticles: Article[];
   availableArticles: Article[];
   onUpdate: () => void;
-  // NEW: Add a prop to show locations only for the 'Don't Miss!' card
   showLocations?: boolean; 
 }
 
@@ -38,11 +37,12 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ title, labelToAssign, d
     }
     setIsSaving(true);
 
-    const updateData: { label: string; featured_locations?: string[] } = {
+    // ✅ FIXED: Use camelCase featuredLocations
+    const updateData: { label: string; featuredLocations?: string[] } = {
       label: labelToAssign,
     };
     if (showLocations) {
-      updateData.featured_locations = selectedLocations;
+      updateData.featuredLocations = selectedLocations;
     }
     
     const { error } = await supabase
@@ -54,7 +54,7 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ title, labelToAssign, d
       alert(`Failed to assign article: ${error.message}`);
     } else {
       alert(`Successfully assigned "${selectedArticle.title}".`);
-      onUpdate(); // Refresh data
+      onUpdate();
     }
     setIsSaving(false);
     setSelectedArticle(null);
@@ -63,16 +63,16 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ title, labelToAssign, d
 
   const handleRemove = async (article: Article) => {
     if (window.confirm(`Are you sure you want to remove the "${labelToAssign}" label from "${article.title}"?`)) {
-      // Set the label and locations back to null
+      // ✅ FIXED: Use camelCase featuredLocations
       const { error } = await supabase
         .from('articles')
-        .update({ label: null, featured_locations: null })
+        .update({ label: null, featuredLocations: null })
         .eq('id', article.id);
 
       if (error) {
         alert(`Failed to remove assignment: ${error.message}`);
       } else {
-        onUpdate(); // Refresh
+        onUpdate();
       }
     }
   };
@@ -84,14 +84,14 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ title, labelToAssign, d
       
       <div className="mt-4 border-t pt-4">
         <h4 className="font-semibold mb-2 text-gray-800">Currently Assigned:</h4>
-        {/* --- THIS IS THE FIX: The list will now display correctly --- */}
         <ul className="space-y-2">
           {assignedArticles.map(article => (
             <li key={article.id} className="p-3 border rounded-md flex justify-between items-center text-sm bg-gray-50">
               <div>
                 <p className="font-semibold">{article.title}</p>
-                {showLocations && article.featured_locations && (
-                  <p className="text-xs text-gray-500 mt-1">Locations: {article.featured_locations.join(', ')}</p>
+                {/* ✅ FIXED: Use camelCase featuredLocations */}
+                {showLocations && article.featuredLocations && (
+                  <p className="text-xs text-gray-500 mt-1">Locations: {article.featuredLocations.join(', ')}</p>
                 )}
               </div>
               <button onClick={() => handleRemove(article)} className="text-red-500 hover:underline font-semibold flex-shrink-0 ml-2">Remove</button>
@@ -107,10 +107,9 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ title, labelToAssign, d
           <ArticleSearchCombobox
             articles={availableArticles}
             onSelect={setSelectedArticle}
-            key={assignedArticles.length} // Force re-render on update
+            key={assignedArticles.length}
           />
 
-          {/* --- THIS IS THE FIX: The locations checkbox is now conditional --- */}
           {showLocations && (
             <div>
               <p className="text-sm font-medium text-gray-700">Display Locations:</p>
