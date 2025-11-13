@@ -25,7 +25,7 @@ const UserManagement = () => {
       const { data, error: fetchError } = await supabase
         .from('users_with_profiles')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('createdAt', { ascending: false });
 
       if (fetchError) {
         console.error('Error fetching users:', fetchError);
