@@ -10,6 +10,9 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({ post }) => {
   if (!post.author) {
     return null;
   }
+
+  // ✅ FIXED: Type assertion for date fields
+  const postAny = post as any;
   
   return (
     <div className="my-6 flex items-center space-x-4">
@@ -23,8 +26,8 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({ post }) => {
       <div>
         <p className="text-base font-semibold text-gray-900">{post.author.name}</p>
         <p className="text-sm text-gray-500">
-          {(post.date || post.publishedDate || post.createdAt) ? (
-            <>Published on {new Date(post.date || post.publishedDate || post.createdAt || '').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</>
+          {(postAny.date || postAny.publishedDate || postAny.createdAt) ? (
+            <>Published on {new Date(postAny.date || postAny.publishedDate || postAny.createdAt || '').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</>
           ) : (
             <>Published recently</>
           )}
