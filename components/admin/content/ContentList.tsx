@@ -23,7 +23,7 @@ const ContentList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterCategory, setFilterCategory] = useState('All');
-  const [sortConfig, setSortConfig] = useState<{ key: keyof Article | null; direction: 'ascending' | 'descending' }>({ key: 'createdAt', direction: 'descending' });
+  const [sortConfig, setSortConfig] = useState<{ key: keyof Article | null; direction: 'ascending' | 'descending' }>({ key: 'createdAt' as keyof Article, direction: 'descending' });
   const [selectedArticles, setSelectedArticles] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
