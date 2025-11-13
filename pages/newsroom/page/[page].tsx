@@ -49,7 +49,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const startIndex = (page - 1) * POSTS_PER_PAGE;
   const endIndex = startIndex + POSTS_PER_PAGE - 1;
   
-  // ✅ OPTIMIZED: Fetch only necessary fields for listing (no full content)
+  // ✅ FIXED: Use camelCase field names
   const { data: paginatedPosts, error: postsError } = await supabase
     .from('articles')
     .select(`
@@ -59,49 +59,48 @@ export const getStaticProps: GetStaticProps = async (context) => {
       excerpt,
       imageUrl,
       category,
-      created_at,
-      published_date,
+      createdAt,
+      publishedDate,
       label,
       tags,
       author:profiles!author_id (
         id,
         name,
-        avatar_url
+        avatarUrl
       )
     `)
     .eq('category', 'Insurance Newsroom')
     .eq('status', 'Published')
-    .order('created_at', { ascending: false })
+    .order('createdAt', { ascending: false })
     .range(startIndex, endIndex);
 
   if (postsError) {
     console.error('Error fetching paginated posts:', postsError);
   }
 
-  // Transform posts
+  // ✅ FIXED: Use camelCase field names
   const transformedPosts = (paginatedPosts || []).map(post => ({
     ...post,
-    date: post.published_date || post.created_at,
+    date: post.publishedDate || post.createdAt,
   }));
 
-  // ✅ OPTIMIZED: Fetch sidebar articles with minimal fields
+  // ✅ FIXED: Use camelCase field names
   const { data: sidebarTips } = await supabase
     .from('articles')
-    .select('id, slug, title, excerpt, imageUrl, category, created_at, published_date')
+    .select('id, slug, title, excerpt, imageUrl, category, createdAt, publishedDate')
     .eq('status', 'Published')
     .eq('category', 'Insurance Tips')
-    .order('created_at', { ascending: false })
+    .order('createdAt', { ascending: false })
     .limit(3);
 
   const { data: sidebarNews } = await supabase
     .from('articles')
-    .select('id, slug, title, excerpt, imageUrl, category, created_at, published_date')
+    .select('id, slug, title, excerpt, imageUrl, category, createdAt, publishedDate')
     .eq('status', 'Published')
     .eq('category', 'Insurance Newsroom')
-    .order('created_at', { ascending: false })
+    .order('createdAt', { ascending: false })
     .limit(3);
 
-  // Get total count for pagination
   const { count } = await supabase
     .from('articles')
     .select('id', { count: 'exact', head: true })
@@ -110,12 +109,11 @@ export const getStaticProps: GetStaticProps = async (context) => {
     
   const totalPages = Math.ceil((count || 0) / POSTS_PER_PAGE);
   
-  // Pinned posts (only on page 1, but keeping logic for consistency)
   const pinnedPosts = transformedPosts.filter(p => p.label === 'Most Read' || p.label === 'Sponsored');
   
-  // Transform dates for sidebar
+  // ✅ FIXED: Use camelCase field names
   const transformDates = (articles: any[] | null) => 
-    (articles || []).map(a => ({ ...a, date: a.published_date || a.created_at }));
+    (articles || []).map(a => ({ ...a, date: a.publishedDate || a.createdAt }));
 
   return {
     props: {
