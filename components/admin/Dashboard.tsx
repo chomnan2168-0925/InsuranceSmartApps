@@ -13,7 +13,7 @@ const Dashboard = () => {
   const [totalAuthors, setTotalAuthors] = useState(0);
   const [publishedPosts, setPublishedPosts] = useState(0);
   const [draftPosts, setDraftPosts] = useState(0);
-  const [recentActivity, setRecentActivity] = useState<Partial<Article>[]>([]);
+const [recentActivity, setRecentActivity] = useState<Article[]>([]);
   
   // Form submissions from SheetDB
   const [formSubmissions, setFormSubmissions] = useState(0);
