@@ -1,5 +1,5 @@
 // components/templates/ArticlePageTemplate.tsx
-// ✅ FIXED VERSION - Uses only camelCase field names
+// ✅ FIXED VERSION - Uses type assertions for all date fields
 
 import React from 'react';
 import { Article } from '@/types';
@@ -18,9 +18,10 @@ import siteConfig from '@/config/siteConfig.json';
 
 // Simple Author & Date Metadata Component
 const ArticleMetadata: React.FC<{ post: Article }> = ({ post }) => {
-  // ✅ FIXED: Use camelCase field names
-  const displayDate = post.lastUpdated || post.publishedDate || post.createdAt;
-  const dateLabel = post.lastUpdated ? 'Updated' : 'Published';
+  // ✅ FIXED: Type assertion for date fields
+  const postAny = post as any;
+  const displayDate = postAny.lastUpdated || postAny.publishedDate || postAny.createdAt;
+  const dateLabel = postAny.lastUpdated ? 'Updated' : 'Published';
   
   return (
     <div className="mt-6 pt-4 border-t border-gray-200 text-sm text-gray-600">
@@ -177,21 +178,21 @@ const ArticlePageTemplate: React.FC<ArticlePageTemplateProps> = ({
   ];
 
   // ✅ FIXED: Helper function to get meta field value (handles both camelCase and snake_case for migration)
-  const getMetaField = (camelCase: keyof Article, snakeCase: string): string => {
+  const getMetaField = (camelCase: string, snakeCase: string): string => {
     return (post as any)[camelCase] || (post as any)[snakeCase] || '';
   };
 
   // ✅ FIXED: Get SEO values with proper fallbacks
-  const seoTitle = getMetaField('metaTitle' as keyof Article, 'meta_title') || post.title;
-  const seoDescription = getMetaField('metaDescription' as keyof Article, 'meta_description') || post.excerpt;
+  const seoTitle = getMetaField('metaTitle', 'meta_title') || post.title;
+  const seoDescription = getMetaField('metaDescription', 'meta_description') || post.excerpt;
 
   // Debug logging (remove in production)
   if (process.env.NODE_ENV === 'development') {
     console.log('🔍 Article SEO Debug:', {
       slug: post.slug,
-      metaTitle: getMetaField('metaTitle' as keyof Article, 'meta_title'),
-      metaDescription: getMetaField('metaDescription' as keyof Article, 'meta_description'),
-      targetKeyword: getMetaField('targetKeyword' as keyof Article, 'target_keyword'),
+      metaTitle: getMetaField('metaTitle', 'meta_title'),
+      metaDescription: getMetaField('metaDescription', 'meta_description'),
+      targetKeyword: getMetaField('targetKeyword', 'target_keyword'),
       tags: post.tags,
       keywords: keywords,
     });
@@ -206,10 +207,10 @@ const ArticlePageTemplate: React.FC<ArticlePageTemplateProps> = ({
         imageUrl={absoluteImageUrl}
         canonical={fullUrl}
         
-        // Article-specific metadata - ✅ FIXED: Use camelCase
+        // Article-specific metadata - ✅ FIXED: Type assertion for date fields
         isArticle={true}
-        publishedDate={post.publishedDate || post.createdAt}
-        modifiedDate={post.lastUpdated || post.createdAt}
+        publishedDate={(post as any).publishedDate || (post as any).createdAt}
+        modifiedDate={(post as any).lastUpdated || (post as any).createdAt}
         author={{
           name: post.author?.name || 'Insurance SmartCalculator Team',
           url: post.author?.id ? `https://www.insurancesmartcalculator.com/authors/${post.author.id}` : undefined,
