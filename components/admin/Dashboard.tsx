@@ -48,17 +48,15 @@ const Dashboard = () => {
     }
   };
 
-  // Fetch data from Supabase
+  // ✅ FIXED: Use camelCase field names
   const fetchSupabaseData = async () => {
     try {
-      // Query 1: Get total count of all articles
       const { count: totalCount, error: totalError } = await supabase
         .from('articles')
         .select('*', { count: 'exact', head: true });
 
       if (totalError) throw totalError;
 
-      // Query 2: Get count of published articles
       const { count: publishedCount, error: publishedError } = await supabase
         .from('articles')
         .select('*', { count: 'exact', head: true })
@@ -66,7 +64,6 @@ const Dashboard = () => {
 
       if (publishedError) throw publishedError;
 
-      // Query 3: Get count of draft articles
       const { count: draftCount, error: draftError } = await supabase
         .from('articles')
         .select('*', { count: 'exact', head: true })
@@ -74,23 +71,21 @@ const Dashboard = () => {
 
       if (draftError) throw draftError;
 
-      // Query 4: Get total count of authors from profiles table
       const { count: authorsCount, error: authorsError } = await supabase
         .from('profiles')
         .select('*', { count: 'exact', head: true });
 
       if (authorsError) throw authorsError;
 
-      // Query 5: Get the 5 most recently updated articles
+      // ✅ FIXED: Use camelCase field names
       const { data: recentArticles, error: activityError } = await supabase
         .from('articles')
-        .select('title, slug, created_at, status, last_updated')
-        .order('last_updated', { ascending: false })
+        .select('title, slug, createdAt, status, lastUpdated')
+        .order('lastUpdated', { ascending: false })
         .limit(5);
 
       if (activityError) throw activityError;
 
-      // Update state
       setTotalPosts(totalCount || 0);
       setPublishedPosts(publishedCount || 0);
       setDraftPosts(draftCount || 0);
@@ -102,7 +97,6 @@ const Dashboard = () => {
     }
   };
 
-  // Fetch form submissions from SheetDB
   const fetchFormSubmissions = async () => {
     try {
       const SHEETDB_API_URL = process.env.NEXT_PUBLIC_SHEETDB_API_URL;
@@ -120,11 +114,9 @@ const Dashboard = () => {
 
       const data = await response.json();
       
-      // Total submissions
       const totalSubmissions = data.length;
       setFormSubmissions(totalSubmissions);
 
-      // Count today's submissions
       const today = new Date().toISOString().split('T')[0];
       const todayCount = data.filter((submission: any) => {
         const submissionDate = submission.timestamp?.split('T')[0] || 
@@ -137,11 +129,9 @@ const Dashboard = () => {
 
     } catch (err) {
       console.error('Error fetching form submissions:', err);
-      // Don't throw - just log and continue
     }
   };
 
-  // Fetch Google Analytics summary (just 24h visitors for main dashboard)
   const fetchAnalyticsSummary = async () => {
     try {
       const response = await fetch('/api/analytics?metric=visitors');
@@ -153,13 +143,11 @@ const Dashboard = () => {
 
       const data = await response.json();
       
-      // Get 24h visitors and calculate change from 7 days
       const visitors24h = data.last24h?.visitors || 0;
       const visitors7days = data.last7days?.visitors || 0;
       
       setSiteVisitors(visitors24h);
       
-      // Calculate approximate daily average from 7 days and compare
       if (visitors7days > 0) {
         const avgDaily = Math.round(visitors7days / 7);
         const change = ((visitors24h - avgDaily) / avgDaily) * 100;
@@ -168,7 +156,6 @@ const Dashboard = () => {
 
     } catch (err) {
       console.error('Error fetching analytics summary:', err);
-      // Don't throw - just log and continue
     }
   };
 
@@ -279,7 +266,7 @@ const Dashboard = () => {
                       </Link>
                     </div>
                     <span className="text-sm text-gray-500 whitespace-nowrap ml-4">
-                      {formatTimeAgo(activity.last_updated || activity.created_at)}
+                      {formatTimeAgo(activity.lastUpdated || activity.createdAt)}
                     </span>
                   </div>
                 </div>
