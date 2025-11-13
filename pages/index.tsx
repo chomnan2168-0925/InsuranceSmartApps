@@ -1,7 +1,3 @@
-// pages/index.tsx
-// ✅ FIXED: Resolved "Invalid top level element 'array'" error
-// Changed: Don't pass organizationSchema separately - let SEO.tsx handle it
-
 import React, { useState } from 'react';
 import { GetStaticProps } from 'next';
 import { Article } from '@/types';
@@ -51,8 +47,7 @@ const HomePage: React.FC<HomePageProps> = ({ recommendedPosts, sidebarTopTips, s
     }
   };
   
-  // ✅ FIXED: Homepage-specific schemas only (SEO.tsx will add Organization automatically)
-  // Don't duplicate Organization schema - it's already in SEO.tsx
+  // ✅ FINAL PRODUCTION SCHEMAS - Optimized for SEO & Error-Free
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -74,6 +69,34 @@ const HomePage: React.FC<HomePageProps> = ({ recommendedPosts, sidebarTopTips, s
       '@type': 'Organization',
       '@id': `${siteConfig.siteUrl}#organization`
     }
+  };
+
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${siteConfig.siteUrl}#organization`,
+    name: siteConfig.organization.name,
+    legalName: siteConfig.organization.legalName,
+    url: siteConfig.organization.url,
+    logo: {
+      '@type': 'ImageObject',
+      '@id': `${siteConfig.siteUrl}#logo`,
+      url: siteConfig.organization.logo,
+      width: 250,
+      height: 60,
+      caption: siteConfig.organization.name
+    },
+    description: siteConfig.organization.description,
+    foundingDate: siteConfig.organization.foundingDate,
+    email: siteConfig.organization.email,
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: siteConfig.organization.contactPoint.contactType,
+      email: siteConfig.organization.contactPoint.email,
+      availableLanguage: [siteConfig.organization.contactPoint.availableLanguage],
+      areaServed: 'US'
+    },
+    sameAs: siteConfig.organization.sameAs
   };
 
   const calculatorSuiteSchema = {
@@ -107,40 +130,40 @@ const HomePage: React.FC<HomePageProps> = ({ recommendedPosts, sidebarTopTips, s
   };
 
   const itemListSchema = {
-     '@context': 'https://schema.org',
-     '@type': 'ItemList',
-     '@id': `${siteConfig.siteUrl}#calculators`,
-     name: 'Insurance Calculator Tools',
-     description: 'Comprehensive suite of free insurance calculators',
-     numberOfItems: 6,
-     itemListElement: siteConfig.calculators.map((calc, index) => ({
-       '@type': 'ListItem',
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    '@id': `${siteConfig.siteUrl}#calculators`,
+    name: 'Insurance Calculator Tools',
+    description: 'Comprehensive suite of free insurance calculators',
+    numberOfItems: 6,
+    itemListElement: siteConfig.calculators.map((calc, index) => ({
+      '@type': 'ListItem',
       position: index + 1,
       item: {
-         '@type': 'SoftwareApplication',
+        '@type': 'SoftwareApplication',
         '@id': `${siteConfig.siteUrl}/calculators/${calc.slug}`,
-         name: calc.name,
-       url: `${siteConfig.siteUrl}/calculators/${calc.slug}`,
+        name: calc.name,
+        url: `${siteConfig.siteUrl}/calculators/${calc.slug}`,
         description: calc.description,
-       applicationCategory: 'FinanceApplication',
-       operatingSystem: 'Any',
-       offers: {
-         '@type': 'Offer',
+        applicationCategory: 'FinanceApplication',
+        operatingSystem: 'Any',
+        offers: {
+          '@type': 'Offer',
           price: '0',
           priceCurrency: 'USD',
-         availability: 'https://schema.org/InStock'
+          availability: 'https://schema.org/InStock'
         },
         aggregateRating: {
-        '@type': 'AggregateRating',
-         ratingValue: '4.8',
-         ratingCount: '2847',
-        bestRating: '5',
-        worstRating: '1'
+          '@type': 'AggregateRating',
+          ratingValue: '4.8',
+          ratingCount: '2847',
+          bestRating: '5',
+          worstRating: '1'
         },
-       image: calc.ogImageFull
+        image: calc.ogImageFull
       }
     }))
-   };
+  };
 
   const collectionPageSchema = {
     '@context': 'https://schema.org',
@@ -159,10 +182,10 @@ const HomePage: React.FC<HomePageProps> = ({ recommendedPosts, sidebarTopTips, s
     }
   };
 
-  // ✅ CRITICAL FIX: Removed organizationSchema from this array
-  // SEO.tsx automatically adds Organization schema, so we don't need it here
-  const homepageSchemas = [
+  // ✅ FINAL: Properly structured array - No nesting issues
+  const combinedSchemas = [
     websiteSchema,
+    organizationSchema,
     calculatorSuiteSchema,
     itemListSchema,
     collectionPageSchema
@@ -193,7 +216,7 @@ const HomePage: React.FC<HomePageProps> = ({ recommendedPosts, sidebarTopTips, s
         description={siteConfig.siteDescription}
         imageUrl={siteConfig.homepageOgImage}
         canonical={`${siteConfig.siteUrl}/`}
-        schemaData={homepageSchemas}
+        schemaData={combinedSchemas}
         keywords={keywords}
       />
       
@@ -259,19 +282,19 @@ export const getStaticProps: GetStaticProps = async () => {
     .select('*')
     .eq('label', "Don't Miss!")
     .eq('status', 'Published')
-    .order('created_at', { ascending: false });
+    .order('createdAt', { ascending: false });
 
   let recommendedPosts = (allFeaturedArticles || []).filter(article => {
-    if (!article.featured_locations) return false;
-    if (Array.isArray(article.featured_locations)) {
-      return article.featured_locations.includes('Home Page');
+    if (!article.featuredLocations) return false;
+    if (Array.isArray(article.featuredLocations)) {
+      return article.featuredLocations.includes('Home Page');
     }
     return false;
   });
 
   const [sidebarTipsResponse, sidebarNewsResponse] = await Promise.all([
-    supabase.from('articles').select('*').eq('category', 'Insurance Tips').eq('status', 'Published').order('created_at', { ascending: false }).limit(3),
-    supabase.from('articles').select('*').eq('category', 'Insurance Newsroom').eq('status', 'Published').order('created_at', { ascending: false }).limit(3)
+    supabase.from('articles').select('*').eq('category', 'Insurance Tips').eq('status', 'Published').order('createdAt', { ascending: false }).limit(3),
+    supabase.from('articles').select('*').eq('category', 'Insurance Newsroom').eq('status', 'Published').order('createdAt', { ascending: false }).limit(3)
   ]);
 
   return {
