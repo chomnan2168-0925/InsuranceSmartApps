@@ -17,7 +17,7 @@ const RedirectManager = () => {
 
     const fetchRedirects = async () => {
         setLoading(true);
-        const { data, error } = await supabase.from('redirects').select('*').order('created_at', { ascending: false });
+        const { data, error } = await supabase.from('redirects').select('*').order('createdAt', { ascending: false });
         if (error) {
             setStatusMessage(`Error: ${error.message}`);
         } else if (data) {
