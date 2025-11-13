@@ -7,13 +7,22 @@ import QuickActions from './QuickActions';
 import { supabase } from '@/lib/supabaseClient';
 import { Article } from '@/types';
 
+// ✅ NEW: Custom type for recent activity (only the fields we fetch)
+interface RecentActivity {
+  title: string;
+  slug: string;
+  createdAt?: string;
+  status: string;
+  lastUpdated?: string;
+}
+
 const Dashboard = () => {
   // Supabase data
   const [totalPosts, setTotalPosts] = useState(0);
   const [totalAuthors, setTotalAuthors] = useState(0);
   const [publishedPosts, setPublishedPosts] = useState(0);
   const [draftPosts, setDraftPosts] = useState(0);
-const [recentActivity, setRecentActivity] = useState<Article[]>([]);
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]); // ✅ FIXED: Use RecentActivity type
   
   // Form submissions from SheetDB
   const [formSubmissions, setFormSubmissions] = useState(0);
@@ -48,7 +57,6 @@ const [recentActivity, setRecentActivity] = useState<Article[]>([]);
     }
   };
 
-  // ✅ FIXED: Use camelCase field names
   const fetchSupabaseData = async () => {
     try {
       const { count: totalCount, error: totalError } = await supabase
@@ -77,7 +85,6 @@ const [recentActivity, setRecentActivity] = useState<Article[]>([]);
 
       if (authorsError) throw authorsError;
 
-      // ✅ FIXED: Use camelCase field names
       const { data: recentArticles, error: activityError } = await supabase
         .from('articles')
         .select('title, slug, createdAt, status, lastUpdated')
@@ -90,7 +97,7 @@ const [recentActivity, setRecentActivity] = useState<Article[]>([]);
       setPublishedPosts(publishedCount || 0);
       setDraftPosts(draftCount || 0);
       setTotalAuthors(authorsCount || 0);
-      setRecentActivity(recentArticles || []);
+      setRecentActivity(recentArticles || []); // ✅ Now TypeScript is happy!
     } catch (err) {
       console.error('Error fetching Supabase data:', err);
       throw err;
