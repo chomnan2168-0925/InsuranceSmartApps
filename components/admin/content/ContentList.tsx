@@ -10,7 +10,7 @@ const ROWS_PER_PAGE = 10;
 const getCategoryPath = (category: Article['category']) => {
   if (category === 'Insurance Tips') return '/insurance-tips';
   if (category === 'Insurance Newsroom') return '/newsroom';
-  return '/'; // Fallback path if category doesn't match
+  return '/';
 };
 
 const ContentList = () => {
@@ -23,7 +23,7 @@ const ContentList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterCategory, setFilterCategory] = useState('All');
-  const [sortConfig, setSortConfig] = useState<{ key: keyof Article | null; direction: 'ascending' | 'descending' }>({ key: 'created_at', direction: 'descending' });
+  const [sortConfig, setSortConfig] = useState<{ key: keyof Article | null; direction: 'ascending' | 'descending' }>({ key: 'createdAt', direction: 'descending' });
   const [selectedArticles, setSelectedArticles] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
@@ -36,7 +36,7 @@ const ContentList = () => {
       const { data, error } = await supabase
         .from('articles')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('createdAt', { ascending: false });
 
       if (error) {
         setError(`Failed to fetch articles: ${error.message}`);
@@ -207,7 +207,7 @@ const ContentList = () => {
                   <th className="p-3">#</th>
                   <SortableHeader label="Title" sortKey="title" />
                   <SortableHeader label="Category" sortKey="category" />
-                  <SortableHeader label="Date" sortKey="created_at" />
+                  <SortableHeader label="Date" sortKey="createdAt" />
                   <SortableHeader label="Status" sortKey="status" />
                   <SortableHeader label="Views" sortKey="views" />
                   <SortableHeader label="Shares" sortKey="shares" />
@@ -221,9 +221,9 @@ const ContentList = () => {
                     <td className="p-3 text-gray-500">{(currentPage - 1) * ROWS_PER_PAGE + index + 1}</td>
                     <td className="p-3 font-medium text-gray-800">{post.title}</td>
                     <td className="p-3 text-gray-600">{post.category}</td>
-                    {/* FIXED: Added null check for created_at */}
+                    {/* ✅ FIXED: Use camelCase createdAt */}
                     <td className="p-3 text-gray-600">
-                      {post.created_at ? new Date(post.created_at).toLocaleDateString() : '–'}
+                      {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : '–'}
                     </td>
                     <td className="p-3"><span className={`px-2 py-1 text-xs font-semibold rounded-full ${post.status === 'Published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{post.status}</span></td>
                     <td className="p-3 text-gray-600">{post.views?.toLocaleString() || '–'}</td>
